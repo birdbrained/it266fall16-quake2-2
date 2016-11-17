@@ -794,8 +794,10 @@ BLASTER / HYPERBLASTER
 ======================================================================
 */
 
+// EVERY ENITY IS AN edict_t
 void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
 {
+	// These are your vectors
 	vec3_t	forward, right;
 	vec3_t	start;
 	vec3_t	offset;
@@ -803,14 +805,16 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	if (is_quad)
 		damage *= 4;
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
-	VectorSet(offset, 24, 8, ent->viewheight-8);
+	VectorSet(offset, 24, 8, ent->viewheight-8);	// This is a macro, where the spawn point of the bullets are in relation to the camera
 	VectorAdd (offset, g_offset, offset);
-	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start); //Takes foward and right vecors and figures out based on where im looking, where I should be firing 
 
-	VectorScale (forward, -2, ent->client->kick_origin);
+	VectorScale (forward, -2, ent->client->kick_origin); //Accounts for pushback
 	ent->client->kick_angles[0] = -1;
-
+	
 	fire_blaster (ent, start, forward, damage, 10, effect, hyper);
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+	fire_blaster (ent, start, forward, damage, 100, effect, hyper);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);

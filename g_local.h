@@ -215,10 +215,10 @@ typedef struct
 typedef struct gitem_s
 {
 	char		*classname;	// spawning name
-	qboolean	(*pickup)(struct edict_s *ent, struct edict_s *other);
-	void		(*use)(struct edict_s *ent, struct gitem_s *item);
+	qboolean	(*pickup)(struct edict_s *ent, struct edict_s *other);	// Function pointer
+	void		(*use)(struct edict_s *ent, struct gitem_s *item);		// Pointers to code to execute
 	void		(*drop)(struct edict_s *ent, struct gitem_s *item);
-	void		(*weaponthink)(struct edict_s *ent);
+	void		(*weaponthink)(struct edict_s *ent);	// Pointer to player who owns weapon, 
 	char		*pickup_sound;
 	char		*world_model;
 	int			world_model_flags;
@@ -1018,7 +1018,7 @@ struct edict_s
 	float		yaw_speed;
 	float		ideal_yaw;
 
-	float		nextthink;
+	float		nextthink;	// when should I invoke the think function next
 	void		(*prethink) (edict_t *ent);
 	void		(*think)(edict_t *self);
 	void		(*blocked)(edict_t *self, edict_t *other);	//move to moveinfo?

@@ -1111,7 +1111,7 @@ void SpawnItem (edict_t *ent, gitem_t *item)
 }
 
 //======================================================================
-
+// every item that will exist in quake
 gitem_t	itemlist[] = 
 {
 	{
@@ -1124,6 +1124,10 @@ gitem_t	itemlist[] =
 
 /*QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
+// Works only becasue of the way it is declared, staticly allocated when initilized
+// When you say the name of the function without (), it returns an address to where the function is in memory
+// Valid to say NULL when it's not needed
+// EF_ROTATE, rotates in the world
 	{
 		"item_armor_body", 
 		Pickup_Armor,
@@ -1262,9 +1266,9 @@ gitem_t	itemlist[] =
 	},
 
 
-	//
-	// WEAPONS 
-	//
+	// ====================
+	//	WEAPONS 
+	// ====================
 
 /* weapon_blaster (.3 .3 1) (-16 -16 -16) (16 16 16)
 always owned, never in the world
@@ -1273,11 +1277,11 @@ always owned, never in the world
 		"weapon_blaster", 
 		NULL,
 		Use_Weapon,
-		NULL,
-		Weapon_Blaster,
+/* Can't drop blaster */	NULL,
+/* Weapon think */			Weapon_Blaster,
 		"misc/w_pkup.wav",
 		NULL, 0,
-		"models/weapons/v_blast/tris.md2",
+/*view model*/		"models/weapons/v_blast/tris.md2",
 /* icon */		"w_blaster",
 /* pickup */	"Blaster",
 		0,
@@ -1290,22 +1294,32 @@ always owned, never in the world
 /* precache */ "weapons/blastf1a.wav misc/lasfly.wav"
 	},
 
+/*
+	0,
+	NULL,
+
+	or
+
+	5,
+	"Cells",
+*/
+
 /*QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 	{
-		"weapon_shotgun", 
+/*class name*/		"weapon_shotgun", 
 		Pickup_Weapon,
 		Use_Weapon,
 		Drop_Weapon,
 		Weapon_Shotgun,
 		"misc/w_pkup.wav",
-		"models/weapons/g_shotg/tris.md2", EF_ROTATE,
-		"models/weapons/v_shotg/tris.md2",
+/*world model*/		"models/weapons/g_shotg/tris.md2", EF_ROTATE,
+/*view model*/		"models/weapons/v_shotg/tris.md2",
 /* icon */		"w_shotgun",
 /* pickup */	"Shotgun",
 		0,
-		1,
-		"Shells",
+/*ammon used per shot*/		1,
+/*ammo type*/		"Shells",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_SHOTGUN,
 		NULL,

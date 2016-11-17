@@ -322,15 +322,15 @@ void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *
 
 	G_FreeEdict (self);
 }
-
+//pointer to the weapon doing the firing        unit vector   
 void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
 {
-	edict_t	*bolt;
-	trace_t	tr;
+	edict_t	*bolt;	//New pointer to an entity, points to where ever in memory the pointer is defined
+	trace_t	tr;		//used by scanhit weapons
 
 	VectorNormalize (dir);
 
-	bolt = G_Spawn();
+	bolt = G_Spawn();	//looks through the god array and looks for 1 instance in the array that is not in use, and returns that spot
 	bolt->svflags = SVF_DEADMONSTER;
 	// yes, I know it looks weird that projectiles are deadmonsters
 	// what this means is that when prediction is used against the object
@@ -347,28 +347,28 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->s.effects |= effect;
 	VectorClear (bolt->mins);
 	VectorClear (bolt->maxs);
-	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2");
+	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2"); //ships/viper
 	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
-	bolt->owner = self;
+	bolt->owner = self;	//who shot the gun
 	bolt->touch = blaster_touch;
 	bolt->nextthink = level.time + 2;
-	bolt->think = G_FreeEdict;
+	bolt->think = G_FreeEdict;	// frees up an entity that has previously been used, so the memory location can be used again
 	bolt->dmg = damage;
 	bolt->classname = "bolt";
 	if (hyper)
 		bolt->spawnflags = 1;
-	gi.linkentity (bolt);
+	gi.linkentity (bolt);	//gi is the class of function that commincates to the game engine
 
 	if (self->client)
 		check_dodge (self, bolt->s.origin, dir, speed);
 
-	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT);
-	if (tr.fraction < 1.0)
+	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT); //from player origin to the center of where the bolt will be created
+	if (tr.fraction < 1.0) //did you hit anything? < 1 means you did.
 	{
 		VectorMA (bolt->s.origin, -10, dir, bolt->s.origin);
-		bolt->touch (bolt, tr.ent, NULL, NULL);
+		bolt->touch (bolt, tr.ent, NULL, NULL); //prevents shooting through walls, players, etc.
 	}
-}	
+}	//now do with this memory as you will
 
 
 /*
@@ -378,6 +378,7 @@ fire_grenade
 */
 static void Grenade_Explode (edict_t *ent)
 {
+	vec3_t aimdir;
 	vec3_t		origin;
 	int			mod;
 
@@ -430,6 +431,13 @@ static void Grenade_Explode (edict_t *ent)
 	gi.WritePosition (origin);
 	gi.multicast (ent->s.origin, MULTICAST_PHS);
 
+	// teehee
+	// INFINTE GRENADES!!!!
+	// Eventually will crash...
+	aimdir[0] = crandom();
+	aimdir[1] = crandom();
+	aimdir[2] = crandom();
+	fire_grenade (ent->owner, ent->s.origin, aimdir, 10, 100, 2, 35);
 	G_FreeEdict (ent);
 }
 
