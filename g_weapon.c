@@ -287,9 +287,19 @@ Fires a single blaster bolt.  Used by the blaster and hyper blaster.
 void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	int		mod;
+	vec3_t aimdir;
 
 	if (other == self->owner)
 		return;
+	/*
+	aimdir[0] = 0;
+	aimdir[1] = 0;
+	aimdir[2] = 0;
+	// hopefully checks if bolt touches another bolt
+	if (other->classname == "bolt")
+	{
+		fire_grenade (self->owner, self->s.origin, aimdir, 10, 100, 2, 35);
+	}*/
 
 	if (surf && (surf->flags & SURF_SKY))
 	{

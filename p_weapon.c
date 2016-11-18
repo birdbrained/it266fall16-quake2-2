@@ -801,6 +801,10 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vec3_t	forward, right;
 	vec3_t	start;
 	vec3_t	offset;
+	float offsetup, angleup, speed;
+	float timeStart, timeToWait, crosstimer;
+	float squareRootNumber;
+
 
 	if (is_quad)
 		damage *= 4;
@@ -813,17 +817,27 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	ent->client->kick_angles[0] = -1;
 	
 	/* Normal Shot */
-	fire_blaster (ent, start, forward, damage, 150, effect, hyper);
+	speed = 150;
+	fire_blaster (ent, start, forward, damage, speed, effect, hyper);
 	//vec3_t rightshot;
 	//VectorSet(rightshot, 29, 8, ent->viewheight-8);
 	//start[0] = start[0] + 5;
 
 	/* Up shot */
 	//start[0] = ent->viewheight;
-	start[2] += 5;
-	forward[2] -= 0.06;
+	offsetup = 5;
+	start[2] += offsetup;
+	angleup = 0.06;
+	forward[2] -= angleup;
 	//P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_blaster (ent, start, forward, damage, 150, effect, hyper);
+	fire_blaster (ent, start, forward, damage, speed, effect, hyper);
+
+	// Calculus...
+	timeStart = level.time;
+	squareRootNumber = pow(offsetup/2/angleup, 2) + pow(offsetup/2, 2);
+	timeToWait = pow(squareRootNumber, 0.5f) / speed;
+
+	crosstimer = timeStart + timeToWait;
 
 	/* Down shot */
 	//start[0] = 24;
