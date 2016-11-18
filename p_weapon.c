@@ -812,9 +812,29 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	VectorScale (forward, -2, ent->client->kick_origin); //Accounts for pushback
 	ent->client->kick_angles[0] = -1;
 	
-	fire_blaster (ent, start, forward, damage, 10, effect, hyper);
-	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_blaster (ent, start, forward, damage, 100, effect, hyper);
+	/* Normal Shot */
+	fire_blaster (ent, start, forward, damage, 150, effect, hyper);
+	//vec3_t rightshot;
+	//VectorSet(rightshot, 29, 8, ent->viewheight-8);
+	//start[0] = start[0] + 5;
+
+	/* Up shot */
+	//start[0] = ent->viewheight;
+	start[2] += 5;
+	forward[2] -= 0.06;
+	//P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+	fire_blaster (ent, start, forward, damage, 150, effect, hyper);
+
+	/* Down shot */
+	//start[0] = 24;
+	start[2] -= 10;
+	forward[2] += 0.12;
+	//fire_blaster (ent, start, forward, damage, 100, effect, hyper);
+
+	/* Right shot */
+	start[2] += 5;
+	start[0] += 5;
+	//fire_blaster (ent, start, forward, damage, 100, effect, hyper);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
