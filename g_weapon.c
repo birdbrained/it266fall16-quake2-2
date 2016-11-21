@@ -1,6 +1,6 @@
 #include "g_local.h"
 
-
+int crosstime;
 /*
 =================
 check_dodge
@@ -332,6 +332,7 @@ void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *
 
 	G_FreeEdict (self);
 }
+
 //pointer to the weapon doing the firing        unit vector   
 void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
 {
@@ -361,14 +362,15 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
 	bolt->owner = self;	//who shot the gun
 	bolt->touch = blaster_touch;
-	bolt->nextthink = level.time + 2;
+	printf("Crosstime is: %f\n", crosstime);
+	bolt->nextthink = level.time + crosstime;
 	bolt->think = G_FreeEdict;	// frees up an entity that has previously been used, so the memory location can be used again
 	bolt->dmg = damage;
 	bolt->classname = "bolt";
 	if (hyper)
 		bolt->spawnflags = 1;
 	gi.linkentity (bolt);	//gi is the class of function that commincates to the game engine
-
+	
 	if (self->client)
 		check_dodge (self, bolt->s.origin, dir, speed);
 
@@ -380,6 +382,11 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	}
 }	//now do with this memory as you will
 
+void setCrosstimer(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, int effect, qboolean hyper, int c)
+{
+	fire_blaster(self, start, aimdir, damage, speed, effect, hyper);
+	crosstime = c;
+}
 
 /*
 =================

@@ -804,6 +804,17 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	float offsetup, angleup, speed;
 	float timeStart, timeToWait, crosstimer;
 	float squareRootNumber;
+	speed = 150;
+	offsetup = 5;
+	angleup = 0.06;
+	
+	// Calculus...
+	timeStart = level.time;
+	squareRootNumber = pow(offsetup/2/angleup, 2) + pow(offsetup/2, 2);
+	timeToWait = pow(squareRootNumber, 0.5f) / speed;
+
+	crosstimer = timeStart + timeToWait;
+	//setCrosstimer (crosstimer);
 
 
 	if (is_quad)
@@ -817,27 +828,23 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	ent->client->kick_angles[0] = -1;
 	
 	/* Normal Shot */
-	speed = 150;
-	fire_blaster (ent, start, forward, damage, speed, effect, hyper);
+	
+	//fire_blaster (ent, start, forward, damage, speed, effect, hyper);
+	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
+	
 	//vec3_t rightshot;
 	//VectorSet(rightshot, 29, 8, ent->viewheight-8);
 	//start[0] = start[0] + 5;
 
 	/* Up shot */
 	//start[0] = ent->viewheight;
-	offsetup = 5;
+	
 	start[2] += offsetup;
-	angleup = 0.06;
 	forward[2] -= angleup;
 	//P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_blaster (ent, start, forward, damage, speed, effect, hyper);
-
-	// Calculus...
-	timeStart = level.time;
-	squareRootNumber = pow(offsetup/2/angleup, 2) + pow(offsetup/2, 2);
-	timeToWait = pow(squareRootNumber, 0.5f) / speed;
-
-	crosstimer = timeStart + timeToWait;
+	
+	//fire_blaster (ent, start, forward, damage, speed, effect, hyper);
+	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
 
 	/* Down shot */
 	//start[0] = 24;
