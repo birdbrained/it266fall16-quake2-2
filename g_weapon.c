@@ -1,6 +1,6 @@
 #include "g_local.h"
 
-int crosstime;
+float crosstime;
 /*
 =================
 check_dodge
@@ -362,9 +362,12 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
 	bolt->owner = self;	//who shot the gun
 	bolt->touch = blaster_touch;
-	printf("Crosstime is: %f\n", crosstime);
-	bolt->nextthink = level.time + crosstime;
+	//gi.dprintf("Crosstime after function is: %f\n", crosstime);
+	//gi.dprintf("level.time(%f) + crosstime(%f): %f\n", level.time, crosstime, level.time + crosstime);
+	//gi.dprintf
+	bolt->nextthink = level.time + crosstime + 0.70;
 	bolt->think = G_FreeEdict;	// frees up an entity that has previously been used, so the memory location can be used again
+								// G_FreeEdict
 	bolt->dmg = damage;
 	bolt->classname = "bolt";
 	if (hyper)
@@ -382,10 +385,10 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	}
 }	//now do with this memory as you will
 
-void setCrosstimer(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, int effect, qboolean hyper, int c)
+void setCrosstimer(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, int effect, qboolean hyper, float c)
 {
-	fire_blaster(self, start, aimdir, damage, speed, effect, hyper);
 	crosstime = c;
+	fire_blaster(self, start, aimdir, damage, speed, effect, hyper);
 }
 
 /*
@@ -398,6 +401,7 @@ static void Grenade_Explode (edict_t *ent)
 	vec3_t aimdir;
 	vec3_t		origin;
 	int			mod;
+	int i;
 
 	if (ent->owner->client)
 		PlayerNoise(ent->owner, ent->s.origin, PNOISE_IMPACT);
@@ -451,10 +455,16 @@ static void Grenade_Explode (edict_t *ent)
 	// teehee
 	// INFINTE GRENADES!!!!
 	// Eventually will crash...
-	aimdir[0] = crandom();
-	aimdir[1] = crandom();
-	aimdir[2] = crandom();
-	fire_grenade (ent->owner, ent->s.origin, aimdir, 10, 100, 2, 35);
+	if (strcmp(ent->classname, "grenade") == 0)
+	{
+		for (i = 0 ; i < 4; i++)
+		{
+			aimdir[0] = crandom();
+			aimdir[1] = crandom();
+			aimdir[2] = crandom();
+			fire_grenade2 (ent->owner, ent->s.origin, aimdir, 10, 100, 2, 35, false);
+		}
+	}
 	G_FreeEdict (ent);
 }
 
@@ -623,6 +633,23 @@ void rocket_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *su
 	G_FreeEdict (ent);
 }
 
+// If you make any think functions, they need the edict_t parameter
+void rocket_think(edict_t *self)
+{
+	vec3_t aimdir;
+	int i;
+
+	if (!self)
+		return;
+	self->nextthink = level.time + 0.5;
+	aimdir[0] = crandom();
+	aimdir[1] = crandom();
+	aimdir[2] = crandom();
+	fire_grenade2 (self->owner, self->s.origin, aimdir, 10, 100, 2, 35, false);
+
+
+}
+
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage)
 {
 	edict_t	*rocket;
@@ -641,8 +668,10 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	rocket->s.modelindex = gi.modelindex ("models/objects/rocket/tris.md2");
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
-	rocket->nextthink = level.time + 8000/speed;
-	rocket->think = G_FreeEdict;
+	//rocket->nextthink = level.time + 8000/speed;
+	rocket->nextthink = level.time + 0.5;
+	//rocket->think = G_FreeEdict;
+	rocket->think = rocket_think;
 	rocket->dmg = damage;
 	rocket->radius_dmg = radius_damage;
 	rocket->dmg_radius = damage_radius;

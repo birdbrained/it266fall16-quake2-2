@@ -286,7 +286,7 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 		{
 			gi.bprintf (PRINT_MEDIUM, "%s %s.\n", self->client->pers.netname, message);
 			if (deathmatch->value)
-				self->client->resp.score--;
+				self->client->resp.score--; // minus your score when you suicide
 			self->enemy = NULL;
 			return;
 		}
@@ -371,7 +371,7 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				if (deathmatch->value)
 				{
 					if (ff)
-						attacker->client->resp.score--;
+						attacker->client->resp.score--; //This is where you increase the score values
 					else
 						attacker->client->resp.score++;
 				}
@@ -583,6 +583,9 @@ InitClientPersistant
 
 This is only called when the game first initializes in single player,
 but is called after each death and level change in deathmatch
+
+//This resets the player's inventory, health, and everything
+everytime the player dies
 ==============
 */
 void InitClientPersistant (gclient_t *client)
@@ -591,7 +594,14 @@ void InitClientPersistant (gclient_t *client)
 
 	memset (&client->pers, 0, sizeof(client->pers));
 
-	item = FindItem("Blaster");
+	/*item = FindItem("Blaster");
+	client->pers.selected_item = ITEM_INDEX(item);
+	client->pers.inventory[client->pers.selected_item] = 1;*/
+
+	item = FindItem("Cells");
+	client->pers.inventory[ITEM_INDEX(item)] = 10;
+
+	item = FindItem("Grenades");
 	client->pers.selected_item = ITEM_INDEX(item);
 	client->pers.inventory[client->pers.selected_item] = 1;
 

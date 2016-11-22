@@ -804,8 +804,8 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	float offsetup, angleup, speed;
 	float timeStart, timeToWait, crosstimer;
 	float squareRootNumber;
-	speed = 150;
-	offsetup = 5;
+	speed = 150.0;
+	offsetup = 5.0;
 	angleup = 0.06;
 	
 	// Calculus...
@@ -814,6 +814,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	timeToWait = pow(squareRootNumber, 0.5f) / speed;
 
 	crosstimer = timeStart + timeToWait;
+	gi.dprintf("Crosstime before passing in is: %f\n", crosstimer);
 	//setCrosstimer (crosstimer);
 
 
@@ -830,6 +831,11 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	/* Normal Shot */
 	
 	//fire_blaster (ent, start, forward, damage, speed, effect, hyper);
+	timeStart = level.time;
+	squareRootNumber = pow(offsetup/2/angleup, 2) + pow(offsetup/2, 2);
+	timeToWait = pow(squareRootNumber, 0.5f) / speed;
+
+	crosstimer = timeStart + timeToWait;
 	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
 	
 	//vec3_t rightshot;
@@ -844,6 +850,11 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	//P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 	
 	//fire_blaster (ent, start, forward, damage, speed, effect, hyper);
+	timeStart = level.time;
+	squareRootNumber = pow(offsetup/2/angleup, 2) + pow(offsetup/2, 2);
+	timeToWait = pow(squareRootNumber, 0.5f) / speed;
+
+	crosstimer = timeStart + timeToWait;
 	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
 
 	/* Down shot */
