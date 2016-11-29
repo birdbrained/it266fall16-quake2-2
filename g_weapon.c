@@ -276,125 +276,11 @@ void fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int k
 		fire_lead (self, start, aimdir, damage, kick, TE_SHOTGUN, hspread, vspread, mod);
 }
 
-
 /*
-=================
-fire_blaster
-
-Fires a single blaster bolt.  Used by the blaster and hyper blaster.
-=================
-*/
-void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
-	int		mod;
-	vec3_t aimdir;
-
-	if (other == self->owner)
-		return;
-	/*
-	aimdir[0] = 0;
-	aimdir[1] = 0;
-	aimdir[2] = 0;
-	// hopefully checks if bolt touches another bolt
-	if (other->classname == "bolt")
-	{
-		fire_grenade (self->owner, self->s.origin, aimdir, 10, 100, 2, 35);
-	}*/
-
-	if (surf && (surf->flags & SURF_SKY))
-	{
-		G_FreeEdict (self);
-		return;
-	}
-
-	if (self->owner->client)
-		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
-
-	if (other->takedamage)
-	{
-		if (self->spawnflags & 1)
-			mod = MOD_HYPERBLASTER;
-		else
-			mod = MOD_BLASTER;
-		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
-	}
-	else
-	{
-		gi.WriteByte (svc_temp_entity);
-		gi.WriteByte (TE_BLASTER);
-		gi.WritePosition (self->s.origin);
-		if (!plane)
-			gi.WriteDir (vec3_origin);
-		else
-			gi.WriteDir (plane->normal);
-		gi.multicast (self->s.origin, MULTICAST_PVS);
-	}
-
-	G_FreeEdict (self);
-}
-
-//pointer to the weapon doing the firing        unit vector   
-void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
-{
-	edict_t	*bolt;	//New pointer to an entity, points to where ever in memory the pointer is defined
-	trace_t	tr;		//used by scanhit weapons
-
-	VectorNormalize (dir);
-
-	bolt = G_Spawn();	//looks through the god array and looks for 1 instance in the array that is not in use, and returns that spot
-	bolt->svflags = SVF_DEADMONSTER;
-	// yes, I know it looks weird that projectiles are deadmonsters
-	// what this means is that when prediction is used against the object
-	// (blaster/hyperblaster shots), the player won't be solid clipped against
-	// the object.  Right now trying to run into a firing hyperblaster
-	// is very jerky since you are predicted 'against' the shots.
-	VectorCopy (start, bolt->s.origin);
-	VectorCopy (start, bolt->s.old_origin);
-	vectoangles (dir, bolt->s.angles);
-	VectorScale (dir, speed, bolt->velocity);
-	bolt->movetype = MOVETYPE_FLYMISSILE;
-	bolt->clipmask = MASK_SHOT;
-	bolt->solid = SOLID_BBOX;
-	bolt->s.effects |= effect;
-	VectorClear (bolt->mins);
-	VectorClear (bolt->maxs);
-	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2"); //ships/viper
-	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
-	bolt->owner = self;	//who shot the gun
-	bolt->touch = blaster_touch;
-	//gi.dprintf("Crosstime after function is: %f\n", crosstime);
-	//gi.dprintf("level.time(%f) + crosstime(%f): %f\n", level.time, crosstime, level.time + crosstime);
-	//gi.dprintf
-	bolt->nextthink = level.time + crosstime + 0.70;
-	bolt->think = G_FreeEdict;	// frees up an entity that has previously been used, so the memory location can be used again
-								// G_FreeEdict
-	bolt->dmg = damage;
-	bolt->classname = "bolt";
-	if (hyper)
-		bolt->spawnflags = 1;
-	gi.linkentity (bolt);	//gi is the class of function that commincates to the game engine
-	
-	if (self->client)
-		check_dodge (self, bolt->s.origin, dir, speed);
-
-	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT); //from player origin to the center of where the bolt will be created
-	if (tr.fraction < 1.0) //did you hit anything? < 1 means you did.
-	{
-		VectorMA (bolt->s.origin, -10, dir, bolt->s.origin);
-		bolt->touch (bolt, tr.ent, NULL, NULL); //prevents shooting through walls, players, etc.
-	}
-}	//now do with this memory as you will
-
-void setCrosstimer(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, int effect, qboolean hyper, float c)
-{
-	crosstime = c;
-	fire_blaster(self, start, aimdir, damage, speed, effect, hyper);
-}
-
-/*
-=================
-fire_grenade
-=================
+==========================
+MOVED GRENADE EXPLODE UP HERE SO THAT THE 
+BLASTER CAN FUNCTION PROPERLY
+==========================
 */
 static void Grenade_Explode (edict_t *ent)
 {
@@ -467,6 +353,141 @@ static void Grenade_Explode (edict_t *ent)
 	}
 	G_FreeEdict (ent);
 }
+
+
+/*
+=================
+fire_blaster
+
+Fires a single blaster bolt.  Used by the blaster and hyper blaster.
+=================
+*/
+void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	int		mod;
+	vec3_t aimdir;
+
+	if (other == self->owner)
+		return;
+	/*
+	aimdir[0] = 0;
+	aimdir[1] = 0;
+	aimdir[2] = 0;
+	// hopefully checks if bolt touches another bolt
+	if (other->classname == "bolt")
+	{
+		fire_grenade (self->owner, self->s.origin, aimdir, 10, 100, 2, 35);
+	}*/
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict (self);
+		return;
+	}
+
+	if (self->owner->client)
+		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage)
+	{
+		if (self->spawnflags & 1)
+			mod = MOD_HYPERBLASTER;
+		else
+			mod = MOD_BLASTER;
+		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
+	}
+	else
+	{
+		gi.WriteByte (svc_temp_entity);
+		gi.WriteByte (TE_BLASTER);
+		gi.WritePosition (self->s.origin);
+		if (!plane)
+			gi.WriteDir (vec3_origin);
+		else
+			gi.WriteDir (plane->normal);
+		gi.multicast (self->s.origin, MULTICAST_PVS);
+	}
+
+	G_FreeEdict (self);
+}
+
+void blaster_think(edict_t *self)
+{
+	vec3_t aimdir;
+
+	if (!self)
+		return;
+
+	self->nextthink = level.time + crosstime + 0.70;
+	aimdir[0] = crandom();
+	aimdir[1] = crandom();
+	aimdir[2] = crandom();
+	Grenade_Explode(self);
+}
+
+//pointer to the weapon doing the firing        unit vector   
+void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
+{
+	edict_t	*bolt;	//New pointer to an entity, points to where ever in memory the pointer is defined
+	trace_t	tr;		//used by scanhit weapons
+
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();	//looks through the god array and looks for 1 instance in the array that is not in use, and returns that spot
+	bolt->svflags = SVF_DEADMONSTER;
+	// yes, I know it looks weird that projectiles are deadmonsters
+	// what this means is that when prediction is used against the object
+	// (blaster/hyperblaster shots), the player won't be solid clipped against
+	// the object.  Right now trying to run into a firing hyperblaster
+	// is very jerky since you are predicted 'against' the shots.
+	VectorCopy (start, bolt->s.origin);
+	VectorCopy (start, bolt->s.old_origin);
+	vectoangles (dir, bolt->s.angles);
+	VectorScale (dir, speed, bolt->velocity);
+	bolt->movetype = MOVETYPE_FLYMISSILE;
+	bolt->clipmask = MASK_SHOT;
+	bolt->solid = SOLID_BBOX;
+	bolt->s.effects |= effect;
+	VectorClear (bolt->mins);
+	VectorClear (bolt->maxs);
+	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2"); //ships/viper
+	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
+	bolt->owner = self;	//who shot the gun
+	bolt->touch = blaster_touch;
+	//gi.dprintf("Crosstime after function is: %f\n", crosstime);
+	//gi.dprintf("level.time(%f) + crosstime(%f): %f\n", level.time, crosstime, level.time + crosstime);
+	//gi.dprintf
+	bolt->nextthink = level.time + crosstime + 0.70;
+	bolt->think = blaster_think;	// frees up an entity that has previously been used, so the memory location can be used again
+								// G_FreeEdict
+	bolt->dmg = damage;
+	bolt->classname = "bolt";
+	if (hyper)
+		bolt->spawnflags = 1;
+	gi.linkentity (bolt);	//gi is the class of function that commincates to the game engine
+	
+	if (self->client)
+		check_dodge (self, bolt->s.origin, dir, speed);
+
+	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT); //from player origin to the center of where the bolt will be created
+	if (tr.fraction < 1.0) //did you hit anything? < 1 means you did.
+	{
+		VectorMA (bolt->s.origin, -10, dir, bolt->s.origin);
+		bolt->touch (bolt, tr.ent, NULL, NULL); //prevents shooting through walls, players, etc.
+	}
+}	//now do with this memory as you will
+
+void setCrosstimer(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, int effect, qboolean hyper, float c)
+{
+	crosstime = c;
+	fire_blaster(self, start, aimdir, damage, speed, effect, hyper);
+}
+
+/*
+=================
+fire_grenade
+=================
+*/
 
 static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
@@ -636,16 +657,23 @@ void rocket_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *su
 // If you make any think functions, they need the edict_t parameter
 void rocket_think(edict_t *self)
 {
-	vec3_t aimdir;
+	vec3_t aimdir, aimdir2;
 	int i;
-
+	//gi.dprintf("self->angle: %f\n", self->angle);
+	
 	if (!self)
 		return;
 	self->nextthink = level.time + 0.5;
+	//self->s.angles[1] += 40;
 	aimdir[0] = crandom();
 	aimdir[1] = crandom();
 	aimdir[2] = crandom();
-	fire_grenade2 (self->owner, self->s.origin, aimdir, 10, 100, 2, 35, false);
+	aimdir2[0] = 0;
+	aimdir2[1] = 0;
+	aimdir2[2] = -90;
+	//fire_grenade2 (self->owner, self->s.origin, aimdir, 10, 100, 2, 35, false);
+	//fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
+	fire_bfg(self->owner, self->s.origin, aimdir2, 5, 50, 20);
 
 
 }
