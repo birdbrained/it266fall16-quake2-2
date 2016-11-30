@@ -692,7 +692,7 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	rocket->s.effects |= EF_ROCKET;
 	VectorClear (rocket->mins);
 	VectorClear (rocket->maxs);
-	rocket->s.modelindex = gi.modelindex ("models/objects/ships/viper.md2"); //"models/objects/ships/viper.md2" "models/objects/rocket/tris.md2"
+	rocket->s.modelindex = gi.modelindex ("models/objects/ships/viper.md2"); //"models/objects/ships/viper.md2" "models/objects/rocket/tris.md2" 
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
 	//rocket->nextthink = level.time + 8000/speed;
