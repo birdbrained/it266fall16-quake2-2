@@ -364,6 +364,10 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "tried to invade";
 				message2 = "'s personal space";
 				break;
+			case MOD_BANANA:
+				message = "answered";
+				message2 = "'s banana phone.";
+				break;
 			}
 			if (message)
 			{

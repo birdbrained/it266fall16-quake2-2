@@ -675,7 +675,6 @@ void rocket_think(edict_t *self)
 	//fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
 	fire_bfg(self->owner, self->s.origin, aimdir2, 5, 50, 20);
 
-
 }
 
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage)
@@ -687,13 +686,13 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	VectorCopy (dir, rocket->movedir);
 	vectoangles (dir, rocket->s.angles);
 	VectorScale (dir, speed, rocket->velocity);
-	rocket->movetype = MOVETYPE_FLYMISSILE;
+	rocket->movetype = MOVETYPE_TOSS; //MOVETYPE_FLYMISSLE
 	rocket->clipmask = MASK_SHOT;
 	rocket->solid = SOLID_BBOX;
 	rocket->s.effects |= EF_ROCKET;
 	VectorClear (rocket->mins);
 	VectorClear (rocket->maxs);
-	rocket->s.modelindex = gi.modelindex ("models/objects/rocket/tris.md2");
+	rocket->s.modelindex = gi.modelindex ("models/objects/ships/viper.md2"); //"models/objects/ships/viper.md2" "models/objects/rocket/tris.md2"
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
 	//rocket->nextthink = level.time + 8000/speed;
