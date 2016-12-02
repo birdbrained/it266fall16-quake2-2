@@ -1283,7 +1283,7 @@ always owned, never in the world
 		NULL, 0,
 /*view model*/		"models/weapons/v_blast/tris.md2",
 /* icon */		"w_blaster",
-/* pickup */	"Blaster",
+/* pickup */	"Blaster", //"Blaster"
 		0,
 		0,
 		NULL,

@@ -1,6 +1,6 @@
 #include "g_local.h"
 #include "m_player.h"
-
+#include "throwup.h"
 
 char *ClientTeam (edict_t *ent)
 {
@@ -138,6 +138,13 @@ void Cmd_Give_f (edict_t *ent)
 	int			i;
 	qboolean	give_all;
 	edict_t		*it_ent;
+
+	//Added this function to see if it's possible to barf.
+	if (Q_stricmp(gi.argv(1), "throwup") == 0)
+	{
+		ThrowUpNow(ent);
+		return;
+	}
 
 	if (deathmatch->value && !sv_cheats->value)
 	{

@@ -426,13 +426,13 @@ typedef struct mapsurface_s  // used internally due to name len probs //ZOID
 typedef struct
 {
 	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	float		fraction;	// time completed, 1.0 = didn't hit anything
+	qboolean	startsolid;	// if true, the initial point was in a solid area (wall)
+	float		fraction;	// time completed, 1.0 = didn't hit anything, if we are moving in same directon, how far along were we able to move it we hit something
 	vec3_t		endpos;		// final position
-	cplane_t	plane;		// surface normal at impact
-	csurface_t	*surface;	// surface hit
+	cplane_t	plane;		// surface normal at impact plane
+	csurface_t	*surface;	// surface hit		surface is loiquid, what material, ladder
 	int			contents;	// contents on other side of surface hit
-	struct edict_s	*ent;		// not set by CM_*() functions
+	struct edict_s	*ent;		// not set by CM_*() functions		will be set to true if hit entity
 } trace_t;
 
 

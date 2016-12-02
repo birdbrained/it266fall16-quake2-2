@@ -364,10 +364,10 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "tried to invade";
 				message2 = "'s personal space";
 				break;
-			case MOD_BANANA:
+			/*case MOD_BANANA:
 				message = "answered";
 				message2 = "'s banana phone.";
-				break;
+				break;*/
 			}
 			if (message)
 			{
@@ -532,11 +532,15 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	self->client->enviro_framenum = 0;
 	self->flags &= ~FL_POWER_ARMOR;
 
+	// Remove blood loss stuff
+	self->bloodloss = 0;
+	self->bloodmultiplier = 1;
+
 	if (self->health < -40)
 	{	// gib
 		gi.sound (self, CHAN_BODY, gi.soundindex ("misc/udeath.wav"), 1, ATTN_NORM, 0);
 		for (n= 0; n < 4; n++)
-			ThrowGib (self, "models/objects/gibs/sm_meat/tris.md2", damage, GIB_ORGANIC);
+			ThrowGib (self, "models/objects/gibs/sm_meat/tris.md2", damage, GIB_ORGANIC); //Gibby
 		ThrowClientHead (self, damage);
 
 		self->takedamage = DAMAGE_NO;
@@ -1282,7 +1286,7 @@ void ClientBeginDeathmatch (edict_t *ent)
 		gi.multicast (ent->s.origin, MULTICAST_PVS);
 	}
 
-	gi.bprintf (PRINT_HIGH, "%s entered the game\n", ent->client->pers.netname);
+	gi.bprintf (PRINT_HIGH, "%s entered the game\n", ent->client->pers.netname); //Player's username
 
 	// make sure all view stuff is valid
 	ClientEndServerFrame (ent);

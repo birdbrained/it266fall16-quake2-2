@@ -110,6 +110,7 @@ qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick)
 fire_lead
 
 This is an internal support routine used for bullet/pellet based weapons.
+Machinegun, shotgun, chaingun
 =================
 */
 static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int te_impact, int hspread, int vspread, int mod)
@@ -122,28 +123,30 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 	float		u;
 	vec3_t		water_start;
 	qboolean	water = false;
-	int			content_mask = MASK_SHOT | MASK_WATER;
+	int			content_mask = MASK_SHOT | MASK_WATER; //bitwise or, merge these together 
 
-	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
-	if (!(tr.fraction < 1.0))
+	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);	//trace takes starting pos, min and max
+																		//self's origin, start is where the bullet is fired
+	if (!(tr.fraction < 1.0))	//if its 1.0, I hit nothing on my path
 	{
 		vectoangles (aimdir, dir);
 		AngleVectors (dir, forward, right, up);
 
-		r = crandom()*hspread;
+		r = crandom()*hspread; //crandom -> -1 to 1 in floating point space
 		u = crandom()*vspread;
-		VectorMA (start, 8192, forward, end);
+		VectorMA (start, 8192, forward, end);	//scalar multiplicatiob
+												//starting postion, foward direction, projects it 8192 units forward, stores it in end
 		VectorMA (end, r, right, end);
 		VectorMA (end, u, up, end);
 
-		if (gi.pointcontents (start) & MASK_WATER)
+		if (gi.pointcontents (start) & MASK_WATER) //if we start underwater
 		{
 			water = true;
 			VectorCopy (start, water_start);
 			content_mask &= ~MASK_WATER;
 		}
 
-		tr = gi.trace (start, NULL, NULL, end, self, content_mask);
+		tr = gi.trace (start, NULL, NULL, end, self, content_mask); //from gun's nozzle to newly caclauted endpoint, ignoring the player
 
 		// see if we hit water
 		if (tr.contents & MASK_WATER)
@@ -151,7 +154,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 			int		color;
 
 			water = true;
-			VectorCopy (tr.endpos, water_start);
+			VectorCopy (tr.endpos, water_start); //tr.endpoint = position in space we hit
 
 			if (!VectorCompare (start, tr.endpos))
 			{
@@ -197,7 +200,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 	}
 
 	// send gun puff / flash
-	if (!((tr.surface) && (tr.surface->flags & SURF_SKY)))
+	if (!((tr.surface) && (tr.surface->flags & SURF_SKY))) //if we did hit something, only checks the 4 bit to see if its true...then not it. So, if we hit a wall
 	{
 		if (tr.fraction < 1.0)
 		{
@@ -215,7 +218,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 					gi.WriteDir (tr.plane.normal);
 					gi.multicast (tr.endpos, MULTICAST_PVS);
 
-					if (self->client)
+					if (self->client) //player
 						PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
 				}
 			}
@@ -304,15 +307,22 @@ static void Grenade_Explode (edict_t *ent)
 		VectorSubtract (ent->s.origin, v, v);
 		points = ent->dmg - 0.5 * VectorLength (v);
 		VectorSubtract (ent->enemy->s.origin, ent->s.origin, dir);
-		if (ent->spawnflags & 1)
+		if (ent->spawnflags & 1) 
 			mod = MOD_HANDGRENADE;
 		else
 			mod = MOD_GRENADE;
 		T_Damage (ent->enemy, ent, ent->owner, dir, ent->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
 	}
-
+	//Set Method of Death to be that you held the grenade
 	if (ent->spawnflags & 2)
+	{
 		mod = MOD_HELD_GRENADE;
+		ent->owner->bloodloss += 30;
+		gi.dprintf("%s's bloodloss: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodloss);
+		if (ent->owner->bloodloss >= 30)
+			ent->owner->bloodmultiplier = 2;
+		gi.dprintf("%s's bloodmultiplier: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodmultiplier);
+	}
 	else if (ent->spawnflags & 1)
 		mod = MOD_HG_SPLASH;
 	else
