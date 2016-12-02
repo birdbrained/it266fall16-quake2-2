@@ -45,18 +45,24 @@ void ThrowUpNow(edict_t *self)
 	else
 		gi.bprintf(PRINT_MEDIUM, "BBLLZSZLSDSDFLLAARRFFFF\n");
 
-	// Cough up some gibbies
-	for (i = 0; i<3; i++)
+	if (self->bloodloss > 0)
 	{
-		ThrowVomit(self, mouth_pos, forward, right, self->velocity);
-	}
-
-	// Cough up a SUPER GIBBY every now and again
-	if (random() < 0.1)
-	{
-		for (i = 0; i<10; i++)
+		// Cough up some gibbies
+		for (i = 0; i<3; i++)
 		{
 			ThrowVomit(self, mouth_pos, forward, right, self->velocity);
-		} 
+		}
+
+		// Cough up a SUPER GIBBY every now and again
+		if (random() < 0.1)
+		{
+			for (i = 0; i<10; i++)
+			{
+				ThrowVomit(self, mouth_pos, forward, right, self->velocity);
+			} 
+		}
+		self->bloodloss -= 5;
+		gi.dprintf("Barfed! New bloodloss: (%d)\n", self->bloodloss);
 	}
 }
+
