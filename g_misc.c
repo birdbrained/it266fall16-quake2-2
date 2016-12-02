@@ -1857,3 +1857,42 @@ void SP_misc_teleporter_dest (edict_t *ent)
 	gi.linkentity (ent);
 }
 
+// Adding a function to throwup gibbies
+void ThrowVomit(edict_t *ent, vec3_t mouth_pos, vec3_t forward, vec3_t right, vec3_t player_vel)
+{
+	edict_t *gib;
+
+	gib = G_Spawn();
+
+	// Check your pointers!
+	if (!gib)
+		return;
+
+	// Start setting up the gib object
+	gi.setmodel(gib, "models/objects/gibs/sm_meat/tris.md2");
+	gib->solid = SOLID_NOT;
+	gib->s.effects |= EF_GIB;
+	gib->flags |= FL_NO_KNOCKBACK;
+	gib->takedamage = DAMAGE_YES;
+	gib->die = gib_die;
+	gib->movetype = MOVETYPE_TOSS;
+	gib->touch = gib_touch;
+
+	// Start the gib from mouth, moving at forward velocity
+	VectorCopy(mouth_pos, gib->s.origin);
+	VectorScale(forward, 120 + crandom()*40, gib->velocity);
+	VectorAdd(player_vel, gib->velocity, gib->velocity);
+
+	// Adds a random left-right component to vomit velocity
+	VectorScale(right, crandom()*20, right);
+	VectorAdd(right, gib->velocity, gib->velocity);
+	gib->avelocity[0] = random()*600;
+	gib->avelocity[1] = random()*600;
+	gib->avelocity[2] = random()*600;
+
+	gib->think = G_FreeEdict; // Could change this later to be a function to reduce bloodloss
+	gib->nextthink = level.time + 10 + random()*10;
+
+	gi.linkentity(gib);
+}
+
