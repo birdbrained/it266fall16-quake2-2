@@ -1560,7 +1560,7 @@ always owned, never in the world
 		WEAP_VAMPIREKNIFE,
 		NULL,
 		0,
-		 "weapons/blastf1a.wav misc/lasfly.wav"
+		 "weapons/hgrenlb1b.wav misc/fhit3.wav"
 	},
 
 	//

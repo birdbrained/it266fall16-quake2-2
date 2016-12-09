@@ -1485,14 +1485,15 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 	trace_t tr;
 	vec3_t dir, forward, right, up, end;
 
+	VectorMA(start, VAMPIREKNIFE_RANGE, aimdir, end);
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
 
-	if (!(tr.fraction < 1.0))
+	/*if (!(tr.fraction < 1.0))
 	{
 		vectoangles(aimdir, dir);
 		AngleVectors(dir, forward, right, up);
 		VectorMA(start, 8192, forward, end);
-	}
+	}*/
 
 	if (!((tr.surface) && (tr.surface->flags & SURF_SKY)))
 	{
@@ -1503,19 +1504,21 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 				//This tells us to damage the thing that in our path...hehe
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_VAMPIREKNIFE);
 				//void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod)
+				gi.sound(self, CHAN_AUTO, gi.soundindex("misc/fhit3.wav"), 1, ATTN_NORM, 0);
 			}
 			else
 			{
 				if (strncmp (tr.surface->name, "sky", 3) != 0)
 				{
 					gi.WriteByte (svc_temp_entity);
-					gi.WriteByte (TE_GUNSHOT);
+					gi.WriteByte (TE_SPARKS);
 					gi.WritePosition (tr.endpos);
 					gi.WriteDir (tr.plane.normal);
 					gi.multicast (tr.endpos, MULTICAST_PVS);
 
-					if (self->client)
-						PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
+					/*if (self->client)
+						PlayerNoise(self, tr.endpos, PNOISE_IMPACT);*/
+					gi.sound(self, CHAN_AUTO, gi.soundindex("weapons/grenlb1b.wav"), 1, ATTN_NORM, 0);
 				}
 			}
 		}

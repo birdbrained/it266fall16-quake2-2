@@ -406,6 +406,16 @@ void Cmd_Use_f (edict_t *ent)
 		return;
 	}
 
+	// Swap Blaster and Vampire Knife by pressing 1
+	else if (!Q_stricmp(s, ent->client->pers.weapon->pickup_name))
+	{
+		if (!Q_stricmp(s, "Blaster"))
+			it = FindItem("Vampire Knife");
+		else if (!Q_stricmp(s, "Vampire Knife"))
+			it = FindItem("Blaster");
+	}
+	// Back 2 Quake
+
 	it->use (ent, it);
 }
 
