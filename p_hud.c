@@ -219,7 +219,7 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 		// send the layout
 		Com_sprintf (entry, sizeof(entry),
 			"client %i %i %i %i %i %i ",
-			x, y, sorted[i], cl->resp.score, cl->ping, (level.framenum - cl->resp.enterframe)/600);
+			x, y, sorted[i]/*client number*/, cl->resp.score, cl->ping, (level.framenum - cl->resp.enterframe)/600);
 		j = strlen(entry);
 		if (stringlength + j > 1024)
 			break;
@@ -366,6 +366,15 @@ void G_SetStats (edict_t *ent)
 	//
 	ent->client->ps.stats[STAT_HEALTH_ICON] = level.pic_health;
 	ent->client->ps.stats[STAT_HEALTH] = ent->health;
+
+	//
+	// bloodloss
+	//
+	ent->client->ps.stats[STAT_BLOODLOSS_ICON] = level.pic_health;
+	ent->client->ps.stats[STAT_BLOODLOSS] = ent->bloodloss;
+
+	ent->client->ps.stats[STAT_BLOODMULTIPLER_ICON] = level.pic_health;
+	ent->client->ps.stats[STAT_BLOODMULTIPLER] = ent->bloodmultiplier;
 
 	//
 	// ammo

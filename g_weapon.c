@@ -50,6 +50,10 @@ qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick)
 	float		range;
 	vec3_t		dir;
 
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);
+
 	//see if enemy is in range
 	VectorSubtract (self->enemy->s.origin, self->s.origin, dir);
 	range = VectorLength(dir);
@@ -127,6 +131,10 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);	//trace takes starting pos, min and max
 																		//self's origin, start is where the bullet is fired
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);
+
 	if (!(tr.fraction < 1.0))	//if its 1.0, I hit nothing on my path
 	{
 		vectoangles (aimdir, dir);
@@ -245,7 +253,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 		gi.WriteByte (TE_BUBBLETRAIL);
 		gi.WritePosition (water_start);
 		gi.WritePosition (tr.endpos);
-		gi.multicast (pos, MULTICAST_PVS);
+		gi.multicast (pos, MULTICAST_PVS);	//everyone should see the particles
 	}
 }
 
@@ -319,8 +327,14 @@ static void Grenade_Explode (edict_t *ent)
 		mod = MOD_HELD_GRENADE;
 		ent->owner->bloodloss += 30;
 		gi.dprintf("%s's bloodloss: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodloss);
-		if (ent->owner->bloodloss >= 30)
+		if (ent->owner->bloodloss >= 150)
+			ent->owner->bloodmultiplier = 4;
+		else if (ent->owner->bloodloss >= 75)
+			ent->owner->bloodmultiplier = 3;
+		else if (ent->owner->bloodloss >= 30)
 			ent->owner->bloodmultiplier = 2;
+		else 
+			ent->owner->bloodmultiplier = 1;
 		gi.dprintf("%s's bloodmultiplier: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodmultiplier);
 	}
 	else if (ent->spawnflags & 1)
@@ -441,6 +455,10 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	edict_t	*bolt;	//New pointer to an entity, points to where ever in memory the pointer is defined
 	trace_t	tr;		//used by scanhit weapons
 
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);
+
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();	//looks through the god array and looks for 1 instance in the array that is not in use, and returns that spot
@@ -536,6 +554,10 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 	vec3_t	dir;
 	vec3_t	forward, right, up;
 
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);
+
 	vectoangles (aimdir, dir);
 	AngleVectors (dir, forward, right, up);
 
@@ -568,6 +590,10 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 	edict_t	*grenade;
 	vec3_t	dir;
 	vec3_t	forward, right, up;
+
+	/*// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);*/
 
 	vectoangles (aimdir, dir);
 	AngleVectors (dir, forward, right, up);
@@ -691,6 +717,10 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 {
 	edict_t	*rocket;
 
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);
+
 	rocket = G_Spawn();
 	VectorCopy (start, rocket->s.origin);
 	VectorCopy (dir, rocket->movedir);
@@ -735,6 +765,10 @@ void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 	edict_t		*ignore;
 	int			mask;
 	qboolean	water;
+
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);
 
 	VectorMA (start, 8192, aimdir, end);
 	VectorCopy (start, from);
@@ -956,6 +990,10 @@ void bfg_think (edict_t *self)
 void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
 {
 	edict_t	*bfg;
+
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("Current damage: (%d)\n", damage);
 
 	bfg = G_Spawn();
 	VectorCopy (start, bfg->s.origin);

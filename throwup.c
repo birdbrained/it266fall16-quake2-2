@@ -34,7 +34,7 @@ void ThrowUpNow(edict_t *self)
 
 	// Write out to the console
 	rambo = random();
-	if (rambo < 0.2)
+	/*if (rambo < 0.2)
 		gi.bprintf(PRINT_MEDIUM, "Hurgle blurgle\n");
 	else if (rambo < 0.4)
 		gi.bprintf(PRINT_MEDIUM, "...BLARHF...\n");
@@ -43,7 +43,7 @@ void ThrowUpNow(edict_t *self)
 	else if (rambo < 0.8)
 		gi.bprintf(PRINT_MEDIUM, "There goes lunch...\n");
 	else
-		gi.bprintf(PRINT_MEDIUM, "BBLLZSZLSDSDFLLAARRFFFF\n");
+		gi.bprintf(PRINT_MEDIUM, "BBLLZSZLSDSDFLLAARRFFFF\n");*/
 
 	if (self->bloodloss > 0)
 	{
@@ -53,16 +53,27 @@ void ThrowUpNow(edict_t *self)
 			ThrowVomit(self, mouth_pos, forward, right, self->velocity);
 		}
 
-		// Cough up a SUPER GIBBY every now and again
-		if (random() < 0.1)
+		// Cough up a SUPER GIBBY every now and again (10 gibs instead of 3)
+		if (rambo < 0.1)
 		{
 			for (i = 0; i<10; i++)
 			{
 				ThrowVomit(self, mouth_pos, forward, right, self->velocity);
 			} 
 		}
+
+		// Update the bloodloss and bloodmultiplier
 		self->bloodloss -= 5;
-		gi.dprintf("Barfed! New bloodloss: (%d)\n", self->bloodloss);
+		if (self->bloodloss >= 150)
+			self->bloodmultiplier = 4;
+		else if (self->bloodloss >= 75)
+			self->bloodmultiplier = 3;
+		else if (self->bloodloss >= 30)
+			self->bloodmultiplier = 2;
+		else 
+			self->bloodmultiplier = 1;
+		gi.dprintf("Barfed! New bloodloss: (%d), New bloodmultiplier: (%d)\n", self->bloodloss, self->bloodmultiplier);
+		//gi.dprintf("%s's new bloodmultiplier: (%d)\n", self->owner->client->pers.netname, self->bloodmultiplier);
 	}
 }
 

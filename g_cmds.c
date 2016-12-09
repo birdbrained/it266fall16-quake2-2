@@ -930,6 +930,15 @@ void ClientCommand (edict_t *ent)
 
 	if (level.intermissiontime)
 		return;
+	// these next cmds get skipped if you're in intermission
+
+	/*
+	============================
+
+	  PUT CUSTOM COMMANDS HERE
+
+	============================
+	*/
 
 	if (Q_stricmp (cmd, "use") == 0)
 		Cmd_Use_f (ent);
@@ -975,6 +984,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_Wave_f (ent);
 	else if (Q_stricmp(cmd, "playerlist") == 0)
 		Cmd_PlayerList_f(ent);
+	else if (Q_stricmp(cmd, "throwup") == 0)
+		ThrowUpNow(ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }
