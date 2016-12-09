@@ -365,10 +365,10 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "tried to invade";
 				message2 = "'s personal space";
 				break;
-			/*case MOD_BANANA:
-				message = "answered";
-				message2 = "'s banana phone.";
-				break;*/
+			case MOD_VAMPIREKNIFE:
+				message = "was leeched by";
+				message2 = "'s Vampire Knife.";
+				break;
 			}
 			if (message)
 			{
@@ -602,6 +602,9 @@ void InitClientPersistant (gclient_t *client)
 	gitem_t		*item;
 
 	memset (&client->pers, 0, sizeof(client->pers));
+
+	item = FindItem("Vampire Knife");
+	client->pers.inventory[ITEM_INDEX(item)] = 1;
 
 	item = FindItem("Blaster");
 	client->pers.selected_item = ITEM_INDEX(item);
@@ -1269,6 +1272,9 @@ void ClientBeginDeathmatch (edict_t *ent)
 {
 	G_InitEdict (ent);
 
+	//ent->bloodloss = 0;
+	//ent->bloodmultiplier = 0;
+
 	InitClientResp (ent->client);
 
 	// locate ent at a spawn point
@@ -1307,6 +1313,9 @@ void ClientBegin (edict_t *ent)
 	int		i;
 
 	ent->client = game.clients + (ent - g_edicts - 1);
+
+	ent->bloodloss = 0;
+	ent->bloodmultiplier = 1;
 
 	if (deathmatch->value)
 	{

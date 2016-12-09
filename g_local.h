@@ -211,6 +211,7 @@ typedef struct
 #define WEAP_HYPERBLASTER		9 
 #define WEAP_RAILGUN			10
 #define WEAP_BFG				11
+#define WEAP_VAMPIREKNIFE		12
 
 typedef struct gitem_s
 {
@@ -479,7 +480,7 @@ extern	int	body_armor_index;
 #define MOD_TRIGGER_HURT	31
 #define MOD_HIT				32
 #define MOD_TARGET_BLASTER	33
-//#define MOD_BANANA			34
+#define MOD_VAMPIREKNIFE    34
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;

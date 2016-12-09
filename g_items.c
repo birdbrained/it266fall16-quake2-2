@@ -17,6 +17,10 @@ void Weapon_GrenadeLauncher (edict_t *ent);
 void Weapon_Railgun (edict_t *ent);
 void Weapon_BFG (edict_t *ent);
 
+// Add new stuff
+void Weapon_Sword (edict_t *ent);
+// Back to stuff
+
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
 gitem_armor_t combatarmor_info	= { 50, 100, .60, .30, ARMOR_COMBAT};
 gitem_armor_t bodyarmor_info	= {100, 200, .80, .60, ARMOR_BODY};
@@ -1534,6 +1538,56 @@ always owned, never in the world
 /* precache */ "sprites/s_bfg1.sp2 sprites/s_bfg2.sp2 sprites/s_bfg3.sp2 weapons/bfg__f1y.wav weapons/bfg__l1a.wav weapons/bfg__x1b.wav weapons/bfg_hum.wav"
 	},
 
+	//
+	// Trying to add in some new items
+	//
+
+	{
+		"weapon_vampireknife",
+		NULL,
+		Use_Weapon,
+		NULL,
+		Weapon_Sword,
+		"misc/w_pkup.wav",
+		NULL, 0,
+		"models/weapons/v_blast/tris.md2",
+		"w_blaster",
+		"Vampire Knife",
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_VAMPIREKNIFE,
+		NULL,
+		0,
+		 "weapons/blastf1a.wav misc/lasfly.wav"
+	},
+
+	//
+	// Back to your regularly scheduled Quake
+	//
+	/*
+		{
+		"weapon_blaster", 
+		NULL,
+		Use_Weapon,
+ Can't drop blaster 	NULL,
+ Weapon think 			Weapon_Blaster,
+		"misc/w_pkup.wav",
+		NULL, 0,
+/view model		"models/weapons/v_blast/tris.md2",
+/ icon /		"w_blaster",
+/ pickup/	"Blaster", //"Blaster"
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_BLASTER,
+		NULL,
+		0,
+/ precache / "weapons/blastf1a.wav misc/lasfly.wav"
+	},
+	*/
 	//
 	// AMMO ITEMS
 	//
