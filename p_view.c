@@ -135,6 +135,16 @@ void P_DamageFeedback (edict_t *player)
 	if (client->damage_alpha > 0.6)
 		client->damage_alpha = 0.6;		// don't go too saturated
 
+	/*//maybe bloodloss coloring?
+	if (player->bloodmultiplier == 2)
+		client->damage_alpha = 0.2;
+	else if (player->bloodmultiplier == 3)
+		client->damage_alpha = 0.4;
+	else if (player->bloodmultiplier == 4)
+		client->damage_alpha = 0.6;
+	else
+		client->damage_alpha = 0;*/
+
 	// the color of the blend will vary based on how much was absorbed
 	// by different armors
 	VectorClear (v);
@@ -535,9 +545,10 @@ void P_FallingDamage (edict_t *ent)
 				ent->s.event = EV_FALL;
 		}
 		ent->pain_debounce_time = level.time;	// no normal pain sound
-		damage = (delta-30)/2;
+		/*damage = (delta-30)/2;
 		if (damage < 1)
-			damage = 1;
+			damage = 1;*/
+		damage = 0;
 		VectorSet (dir, 0, 0, 1);
 
 		if (!deathmatch->value || !((int)dmflags->value & DF_NO_FALLING) )

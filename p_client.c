@@ -1822,3 +1822,17 @@ void ClientBeginServerFrame (edict_t *ent)
 
 	client->latched_buttons = 0;
 }
+
+/*
+void SetBloodMultiplier(edict_t *ent)
+{
+	if (ent->bloodloss >= 150)
+		ent->bloodmultiplier = 4;
+	else if (ent->bloodloss >= 75)
+		ent->bloodmultiplier = 3;
+	else if (ent->bloodloss >= 30)
+		ent->bloodmultiplier = 2;
+	else 
+		ent->bloodmultiplier = 1;
+}*/
+

@@ -287,6 +287,18 @@ void fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int k
 		fire_lead (self, start, aimdir, damage, kick, TE_SHOTGUN, hspread, vspread, mod);
 }
 
+/*void SetBloodMultiplier(edict_t *ent)
+{
+	if (ent->bloodloss >= 150)
+		ent->bloodmultiplier = 4;
+	else if (ent->bloodloss >= 75)
+		ent->bloodmultiplier = 3;
+	else if (ent->bloodloss >= 30)
+		ent->bloodmultiplier = 2;
+	else 
+		ent->bloodmultiplier = 1;
+}
+*/
 /*
 ==========================
 MOVED GRENADE EXPLODE UP HERE SO THAT THE 

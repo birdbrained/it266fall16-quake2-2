@@ -1468,8 +1468,19 @@ void Weapon_BFG (edict_t *ent)
 	Weapon_Generic (ent, 8, 32, 55, 58, pause_frames, fire_frames, weapon_bfg_fire);
 }
 
-
 //======================================================================
+
+void SetBloodMultiplier(edict_t *ent)
+{
+	if (ent->bloodloss >= 150)
+		ent->bloodmultiplier = 4;
+	else if (ent->bloodloss >= 75)
+		ent->bloodmultiplier = 3;
+	else if (ent->bloodloss >= 30)
+		ent->bloodmultiplier = 2;
+	else 
+		ent->bloodmultiplier = 1;
+}
 
 /*
 	Hopefully this works
@@ -1480,10 +1491,14 @@ void Weapon_BFG (edict_t *ent)
 	int damage : the damage the sword inflicts
 	int kick : throw that sucka away
 */
+
 void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick)
 {
 	trace_t tr;
 	vec3_t dir, forward, right, up, end;
+	int bloodsteal;
+
+	gi.dprintf("Current damage: (%d)\n", damage);
 
 	VectorMA(start, VAMPIREKNIFE_RANGE, aimdir, end);
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
@@ -1505,6 +1520,24 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_VAMPIREKNIFE);
 				//void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod)
 				gi.sound(self, CHAN_AUTO, gi.soundindex("misc/fhit3.wav"), 1, ATTN_NORM, 0);
+				if(tr.ent->bloodloss > 10)
+				{
+					tr.ent->bloodloss -= 10;
+					SetBloodMultiplier(tr.ent);
+					self->bloodloss += 10;
+					SetBloodMultiplier(self);
+
+					/*
+					if (ent->owner->bloodloss >= 150)
+						ent->owner->bloodmultiplier = 4;
+					else if (ent->owner->bloodloss >= 75)
+						ent->owner->bloodmultiplier = 3;
+					else if (ent->owner->bloodloss >= 30)
+						ent->owner->bloodmultiplier = 2;
+					else 
+						ent->owner->bloodmultiplier = 1;
+					*/
+				}
 			}
 			else
 			{
