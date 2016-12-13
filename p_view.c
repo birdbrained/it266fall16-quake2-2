@@ -546,7 +546,7 @@ void P_FallingDamage (edict_t *ent)
 		}
 		ent->pain_debounce_time = level.time;	// no normal pain sound
 		/*damage = (delta-30)/2;
-		if (damage < 1)
+		if (damage < 1)							// remove fall damage
 			damage = 1;*/
 		damage = 0;
 		VectorSet (dir, 0, 0, 1);
@@ -778,6 +778,12 @@ void G_SetClientEffects (edict_t *ent)
 	{
 		ent->s.effects |= EF_COLOR_SHELL;
 		ent->s.renderfx |= (RF_SHELL_RED|RF_SHELL_GREEN|RF_SHELL_BLUE);
+	}
+
+	if (ent->bloodmultiplier == 4 || ent->bloodmultiplier == 3)
+	{
+		ent->s.effects |= EF_COLOR_SHELL;
+		ent->s.renderfx |= RF_SHELL_RED;
 	}
 }
 

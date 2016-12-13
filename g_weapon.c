@@ -307,6 +307,7 @@ BLASTER CAN FUNCTION PROPERLY
 */
 static void Grenade_Explode (edict_t *ent)
 {
+	float		*angles;
 	vec3_t aimdir;
 	vec3_t		origin;
 	int			mod;
@@ -340,11 +341,18 @@ static void Grenade_Explode (edict_t *ent)
 		ent->owner->bloodloss += 30;
 		gi.dprintf("%s's bloodloss: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodloss);
 		if (ent->owner->bloodloss >= 150)
+		{
 			ent->owner->bloodmultiplier = 4;
+			
+		}
 		else if (ent->owner->bloodloss >= 75)
 			ent->owner->bloodmultiplier = 3;
 		else if (ent->owner->bloodloss >= 30)
+		{
 			ent->owner->bloodmultiplier = 2;
+			//angles = ent->client->ps.kick_angles;
+			//VectorCopy (ent->client->kick_angles, angles);
+		}
 		else 
 			ent->owner->bloodmultiplier = 1;
 		gi.dprintf("%s's bloodmultiplier: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodmultiplier);

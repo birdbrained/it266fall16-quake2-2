@@ -807,7 +807,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	float squareRootNumber;
 	speed = 150.0;
 	offsetup = 5.0;
-	angleup = 0.06;
+	angleup = 0.06 / ent->bloodmultiplier;
 	
 	// Calculus...
 	timeStart = level.time;
@@ -837,7 +837,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	timeToWait = pow(squareRootNumber, 0.5f) / speed;
 
 	crosstimer = timeStart + timeToWait;
-	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
+	setCrosstimer (ent, start, forward, damage, speed * ent->bloodmultiplier, effect, hyper, crosstimer);
 	
 	//vec3_t rightshot;
 	//VectorSet(rightshot, 29, 8, ent->viewheight-8);
@@ -856,7 +856,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	timeToWait = pow(squareRootNumber, 0.5f) / speed;
 
 	crosstimer = timeStart + timeToWait;
-	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
+	setCrosstimer (ent, start, forward, damage, speed * ent->bloodmultiplier, effect, hyper, crosstimer);
 
 	/* Down shot */
 	//start[0] = 24;
@@ -1502,6 +1502,7 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 
 	VectorMA(start, VAMPIREKNIFE_RANGE, aimdir, end);
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
+	
 
 	/*if (!(tr.fraction < 1.0))
 	{
