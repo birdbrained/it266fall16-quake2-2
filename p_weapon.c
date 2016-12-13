@@ -805,7 +805,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	float offsetup, angleup, speed;
 	float timeStart, timeToWait, crosstimer;
 	float squareRootNumber;
-	speed = 150.0;
+	speed = 150.0 * ent->bloodmultiplier;
 	offsetup = 5.0;
 	angleup = 0.06 / ent->bloodmultiplier;
 	
@@ -815,7 +815,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	timeToWait = pow(squareRootNumber, 0.5f) / speed;
 
 	crosstimer = timeStart + timeToWait;
-	gi.dprintf("Crosstime before passing in is: %f\n", crosstimer);
+	//gi.dprintf("Crosstime before passing in is: %f\n", crosstimer);
 	//setCrosstimer (crosstimer);
 
 
@@ -837,7 +837,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	timeToWait = pow(squareRootNumber, 0.5f) / speed;
 
 	crosstimer = timeStart + timeToWait;
-	setCrosstimer (ent, start, forward, damage, speed * ent->bloodmultiplier, effect, hyper, crosstimer);
+	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
 	
 	//vec3_t rightshot;
 	//VectorSet(rightshot, 29, 8, ent->viewheight-8);
@@ -856,7 +856,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	timeToWait = pow(squareRootNumber, 0.5f) / speed;
 
 	crosstimer = timeStart + timeToWait;
-	setCrosstimer (ent, start, forward, damage, speed * ent->bloodmultiplier, effect, hyper, crosstimer);
+	setCrosstimer (ent, start, forward, damage, speed, effect, hyper, crosstimer);
 
 	/* Down shot */
 	//start[0] = 24;
@@ -1497,6 +1497,8 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 	trace_t tr;
 	vec3_t dir, forward, right, up, end;
 	int bloodsteal;
+	damage /= self->bloodmultiplier;
+	bloodsteal = self->bloodmultiplier * 3;
 
 	gi.dprintf("Current damage: (%d)\n", damage);
 
@@ -1521,11 +1523,11 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_VAMPIREKNIFE);
 				//void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod)
 				gi.sound(self, CHAN_AUTO, gi.soundindex("misc/fhit3.wav"), 1, ATTN_NORM, 0);
-				if(tr.ent->bloodloss > 10)
+				if(tr.ent->bloodloss > bloodsteal)
 				{
-					tr.ent->bloodloss -= 10;
+					tr.ent->bloodloss -= bloodsteal;
 					SetBloodMultiplier(tr.ent);
-					self->bloodloss += 10;
+					self->bloodloss += bloodsteal;
 					SetBloodMultiplier(self);
 
 					/*
