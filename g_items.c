@@ -19,6 +19,7 @@ void Weapon_BFG (edict_t *ent);
 
 // Add new stuff
 void Weapon_Sword (edict_t *ent);
+void Weapon_PoisonArrows (edict_t *ent);
 // Back to stuff
 
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
@@ -1561,6 +1562,27 @@ always owned, never in the world
 		NULL,
 		0,
 		 "weapons/hgrenlb1b.wav misc/fhit3.wav"
+	},
+
+	{
+		"weapon_poison_arrows",
+		Pickup_Weapon,
+		Use_Weapon,
+		Drop_Weapon,
+		Weapon_PoisonArrows,
+		"misc/w_pkup.wav",
+		"models/weapons/g_bfg/tris.md2", EF_ROTATE,
+		"models/weapons/v_bfg/tris.md2",
+		"w_bfg",
+		"Poison Arrows",
+		0,
+		1,
+		"Cells",
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_POISONARROWS,
+		NULL,
+		0,
+		"sprites/s_explod.sp2"
 	},
 
 	//

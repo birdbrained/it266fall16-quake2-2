@@ -761,6 +761,22 @@ char *dm_statusbar =
   "xv 64 "
   "stat_string 16 "
 "endif "
+
+// bloodloss
+"xr	0 "
+"yt 2 "
+"num 3 19 "
+
+
+// bloodmultipler
+"if 20 "
+	"yb	-96"
+	"xr	-58"
+	"num 2	21"
+	"xr	-24"
+	"pic	20"
+"endif"
+
 ;
 
 

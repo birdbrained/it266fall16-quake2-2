@@ -273,6 +273,9 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 			case MOD_BFG_BLAST:
 				message = "should have used a smaller gun";
 				break;
+			case MOD_WF_POISON:
+				message = "melted into an acidic puddle.";
+				break;
 			default:
 				if (IsNeutral(self))
 					message = "killed itself";
@@ -604,6 +607,9 @@ void InitClientPersistant (gclient_t *client)
 	memset (&client->pers, 0, sizeof(client->pers));
 
 	item = FindItem("Vampire Knife");
+	client->pers.inventory[ITEM_INDEX(item)] = 1;
+
+	item = FindItem("Poison Arrows");
 	client->pers.inventory[ITEM_INDEX(item)] = 1;
 
 	item = FindItem("Blaster");

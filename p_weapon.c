@@ -1498,9 +1498,10 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 	vec3_t dir, forward, right, up, end;
 	int bloodsteal;
 	damage /= self->bloodmultiplier;
-	bloodsteal = self->bloodmultiplier * 3;
+	bloodsteal = self->bloodmultiplier * 5;
 
 	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("Blood to steal: (%d)\n", bloodsteal);
 
 	VectorMA(start, VAMPIREKNIFE_RANGE, aimdir, end);
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
@@ -1595,5 +1596,45 @@ void Weapon_Sword(edict_t *ent)
 	static int fire_frames[] = {5, 0};
 
 	Weapon_Generic (ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_Sword_Fire);
+}
+
+void weapon_poison_arrow_fire (edict_t *ent)
+{
+	vec3_t offset, start, forward, right;
+	int damage = 5 * ent->bloodmultiplier;
+	float damage_radius = 1000;
+
+	if (!(ent->client->buttons & BUTTON_ATTACK))
+	{
+		ent->client->ps.gunframe = 33;
+		return;
+	}
+
+	gi.WriteByte(svc_muzzleflash);
+	gi.WriteShort(ent-g_edicts);
+	gi.WriteByte(MZ_ROCKET);
+	gi.multicast(ent->s.origin, MULTICAST_PVS);
+
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+
+	if (is_quad)
+		damage *= 4;
+
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 8, 8, ent->viewheight-8);
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+
+	fire_poison_arrow(ent, start, forward, damage, 500, damage_radius);
+
+	ent->client->ps.gunframe++;
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+	ent->client->pers.inventory[ent->client->ammo_index] -= ent->client->pers.weapon->quantity;
+}
+
+void Weapon_PoisonArrows(edict_t *ent)
+{
+	static int pause_frames[] = {39, 45, 50, 55, 0};
+	static int fire_frames[] = {9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 0};
+	Weapon_Generic (ent, 8, 32, 55, 58, pause_frames, fire_frames, weapon_poison_arrow_fire);
 }
 

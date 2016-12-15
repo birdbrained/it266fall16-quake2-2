@@ -996,6 +996,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_PlayerList_f(ent);
 	else if (Q_stricmp(cmd, "throwup") == 0)
 		ThrowUpNow(ent);
+	else if (Q_stricmp(cmd, "blood") == 0)
+		DrawBloodBars(ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

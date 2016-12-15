@@ -212,6 +212,7 @@ typedef struct
 #define WEAP_RAILGUN			10
 #define WEAP_BFG				11
 #define WEAP_VAMPIREKNIFE		12
+#define WEAP_POISONARROWS		13
 
 typedef struct gitem_s
 {
@@ -481,6 +482,7 @@ extern	int	body_armor_index;
 #define MOD_HIT				32
 #define MOD_TARGET_BLASTER	33
 #define MOD_VAMPIREKNIFE    34
+#define MOD_WF_POISON		35
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;
@@ -718,6 +720,7 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
 void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
 void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
+void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
 
 //
 // g_ptrail.c
@@ -766,6 +769,7 @@ void G_SetSpectatorStats (edict_t *ent);
 void G_CheckChaseStats (edict_t *ent);
 void ValidateSelectedItem (edict_t *ent);
 void DeathmatchScoreboardMessage (edict_t *client, edict_t *killer);
+void DrawBloodBars(edict_t *ent);
 
 //
 // g_pweapon.c
@@ -1099,6 +1103,11 @@ struct edict_s
 	
 	int			bloodloss;
 	int			bloodmultiplier;
+
+	// Poison arrows
+	float		PoisonDelay;
+	int			Poison;
+	int			PoisonDamage;
 	
 };
 

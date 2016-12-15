@@ -899,6 +899,13 @@ void SV_Physics_Step (edict_t *ent)
 					gi.sound (ent, 0, gi.soundindex("world/land.wav"), 1, 1, 0);
 	}
 
+	/*if (ent->bloodmultiplier)
+	{
+		ent->velocity[0] *= ent->bloodmultiplier;
+		ent->velocity[1] *= ent->bloodmultiplier;
+		ent->velocity[2] *= ent->bloodmultiplier;
+	}*/
+
 // regular thinking
 	SV_RunThink (ent);
 }
