@@ -372,6 +372,9 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "was leeched by";
 				message2 = "'s Vampire Knife.";
 				break;
+			case MOD_PUSH:
+				message = "was slightly nudged by";
+				break;
 			}
 			if (message)
 			{
@@ -605,6 +608,9 @@ void InitClientPersistant (gclient_t *client)
 	gitem_t		*item;
 
 	memset (&client->pers, 0, sizeof(client->pers));
+
+	item = FindItem("Pusher");
+	client->pers.inventory[ITEM_INDEX(item)] = 1;
 
 	item = FindItem("Vampire Knife");
 	client->pers.inventory[ITEM_INDEX(item)] = 1;

@@ -213,6 +213,7 @@ typedef struct
 #define WEAP_BFG				11
 #define WEAP_VAMPIREKNIFE		12
 #define WEAP_POISONARROWS		13
+#define WEAP_PUSHER				14
 
 typedef struct gitem_s
 {
@@ -483,6 +484,7 @@ extern	int	body_armor_index;
 #define MOD_TARGET_BLASTER	33
 #define MOD_VAMPIREKNIFE    34
 #define MOD_WF_POISON		35
+#define MOD_PUSH			36
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;
@@ -720,7 +722,8 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
 void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
 void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
-void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
+void fire_poison_arrow (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
+void fire_pusher (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect);
 
 //
 // g_ptrail.c

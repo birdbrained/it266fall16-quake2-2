@@ -20,6 +20,7 @@ void Weapon_BFG (edict_t *ent);
 // Add new stuff
 void Weapon_Sword (edict_t *ent);
 void Weapon_PoisonArrows (edict_t *ent);
+void Weapon_Pusher (edict_t *ent);
 // Back to stuff
 
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
@@ -1583,6 +1584,27 @@ always owned, never in the world
 		NULL,
 		0,
 		"sprites/s_explod.sp2"
+	},
+
+	{
+		"weapon_pusher",
+		NULL,
+		Use_Weapon,
+		NULL,
+		Weapon_Pusher,
+		"misc/w_pkup.wav",
+		NULL, 0,
+		"models/weapons/v_machn/tris.md2",
+		"w_bfg",
+		"Pusher",
+		0,
+		1,
+		"Cells",
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_PUSHER,
+		NULL,
+		0,
+		"weapons/blastf1a.wav misc/lasfly.wav"
 	},
 
 	//
