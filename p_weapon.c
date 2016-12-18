@@ -1500,8 +1500,8 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 	damage /= self->bloodmultiplier;
 	bloodsteal = self->bloodmultiplier * 5;
 
-	gi.dprintf("Current damage: (%d)\n", damage);
-	gi.dprintf("Blood to steal: (%d)\n", bloodsteal);
+	gi.dprintf("(Vamp) Current damage: (%d)\n", damage);
+	gi.dprintf("(Vamp) Blood to steal: (%d)\n", bloodsteal);
 
 	VectorMA(start, VAMPIREKNIFE_RANGE, aimdir, end);
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
@@ -1606,10 +1606,10 @@ void fire_selfsword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 	vec3_t dir, forward, right, up, end;
 	int bloodincr;
 	damage *= self->bloodmultiplier;
-	bloodincr = self->bloodmultiplier * 10;
+	bloodincr = 10 / self->bloodmultiplier;
 
 	gi.dprintf("(Self S.) Current damage: (%d)\n", damage);
-	gi.dprintf("(Self S.) Blood to steal: (%d)\n", bloodincr);
+	gi.dprintf("(Self S.) Blood to incrs: (%d)\n", bloodincr);
 
 	VectorMA(start, SELFSWORD_RANGE, aimdir, end);
 	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
@@ -1626,8 +1626,11 @@ void fire_selfsword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 	{
 		T_Damage(self, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_SELFSWORD);
 		gi.sound(self, CHAN_AUTO, gi.soundindex("misc/fhit3.wav"), 1, ATTN_NORM, 0);
-		self->bloodloss += bloodincr;
-		SetBloodMultiplier(self);
+		if (self->health > 0)
+		{
+			self->bloodloss += bloodincr;
+			SetBloodMultiplier(self);
+		}
 	}
 
 	/*if (!((tr.surface) && (tr.surface->flags & SURF_SKY)))
