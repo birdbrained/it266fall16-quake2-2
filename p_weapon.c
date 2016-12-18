@@ -1599,6 +1599,107 @@ void Weapon_Sword(edict_t *ent)
 }
 
 
+// Self-hurting sword!
+void fire_selfsword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick)
+{
+	trace_t tr;
+	vec3_t dir, forward, right, up, end;
+	int bloodincr;
+	damage *= self->bloodmultiplier;
+	bloodincr = self->bloodmultiplier * 10;
+
+	gi.dprintf("(Self S.) Current damage: (%d)\n", damage);
+	gi.dprintf("(Self S.) Blood to steal: (%d)\n", bloodincr);
+
+	VectorMA(start, SELFSWORD_RANGE, aimdir, end);
+	tr = gi.trace (self->s.origin, NULL, NULL, start, self, MASK_SHOT);
+	
+
+	/*if (!(tr.fraction < 1.0))
+	{
+		vectoangles(aimdir, dir);
+		AngleVectors(dir, forward, right, up);
+		VectorMA(start, 8192, forward, end);
+	}*/
+
+	if (self->takedamage)
+	{
+		T_Damage(self, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_SELFSWORD);
+		gi.sound(self, CHAN_AUTO, gi.soundindex("misc/fhit3.wav"), 1, ATTN_NORM, 0);
+		self->bloodloss += bloodincr;
+		SetBloodMultiplier(self);
+	}
+
+	/*if (!((tr.surface) && (tr.surface->flags & SURF_SKY)))
+	{
+		if (tr.fraction < 1.0)
+		{
+			if (tr.ent->takedamage)
+			{
+				//This tells us to damage the thing that is in our path...hehe
+				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_VAMPIREKNIFE);
+				//void T_Damage (edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod)
+				gi.sound(self, CHAN_AUTO, gi.soundindex("misc/fhit3.wav"), 1, ATTN_NORM, 0);
+				if(tr.ent->bloodloss > bloodincr)
+				{
+					tr.ent->bloodloss -= bloodincr;
+					SetBloodMultiplier(tr.ent);
+					self->bloodloss += bloodincr;
+					SetBloodMultiplier(self);
+				}
+			}
+			else
+			{
+				if (strncmp (tr.surface->name, "sky", 3) != 0)
+				{
+					gi.WriteByte (svc_temp_entity);
+					gi.WriteByte (TE_SPARKS);
+					gi.WritePosition (tr.endpos);
+					gi.WriteDir (tr.plane.normal);
+					gi.multicast (tr.endpos, MULTICAST_PVS);
+
+
+					gi.sound(self, CHAN_AUTO, gi.soundindex("weapons/grenlb1b.wav"), 1, ATTN_NORM, 0);
+				}
+			}
+		}
+	}*/
+	return;
+}
+void selfsword_attack (edict_t *ent, vec3_t g_offset, int damage)
+{
+	vec3_t forward, right, start, offset;
+
+	if (is_quad)
+		{ damage *= 4; }
+	AngleVectors(ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 24, 8, ent->viewheight-8);
+	VectorAdd(offset, g_offset, offset);
+	P_ProjectSource(ent->client, ent->s.origin, offset, forward, right, start);
+	VectorScale(forward, -2, ent->client->kick_origin);
+	ent->client->kick_angles[0] = 1;
+
+	fire_selfsword(ent, start, forward, damage, SELFSWORD_KICK);
+}
+void Weapon_SelfSword_Fire(edict_t *ent)
+{
+	int damage;
+	if (deathmatch->value)
+		damage = SELFSWORD_DEATHMATCH_DAMAGE;
+	else
+		damage = SELFSWORD_NORMAL_DAMAGE;
+	selfsword_attack (ent, vec3_origin, damage);
+	ent->client->ps.gunframe++;
+}
+void Weapon_SelfSword(edict_t *ent)
+{
+	static int pause_frames[] = {19, 32, 0};
+	static int fire_frames[] = {5, 0};
+
+	Weapon_Generic (ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_SelfSword_Fire);
+}
+
+
 // POISON ARROWS
 void weapon_poison_arrow_fire (edict_t *ent)
 {

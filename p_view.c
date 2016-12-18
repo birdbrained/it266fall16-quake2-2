@@ -435,7 +435,7 @@ void SV_CalcBlend (edict_t *ent)
 	else if (ent->bloodmultiplier == 3)
 		SV_AddBlend(0.7, 0.1, 0.0, 0.3, ent->client->ps.blend);
 	else if (ent->bloodmultiplier == 4)
-		SV_AddBlend(0.7, 0.1, 0.0, 0.5, ent->client->ps.blend);
+		SV_AddBlend(1.0, 0.3, 0.0, 0.5, ent->client->ps.blend);
 
 	// add for powerups
 	if (ent->client->quad_framenum > level.framenum)

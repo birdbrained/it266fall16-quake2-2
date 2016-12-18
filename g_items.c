@@ -21,6 +21,7 @@ void Weapon_BFG (edict_t *ent);
 void Weapon_Sword (edict_t *ent);
 void Weapon_PoisonArrows (edict_t *ent);
 void Weapon_Pusher (edict_t *ent);
+void Weapon_SelfSword(edict_t *ent);
 // Back to stuff
 
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
@@ -1605,6 +1606,27 @@ always owned, never in the world
 		NULL,
 		0,
 		"weapons/blastf1a.wav misc/lasfly.wav"
+	},
+
+	{
+		"weapon_selfsword",
+		NULL,
+		Use_Weapon,
+		NULL,
+		Weapon_SelfSword,
+		"misc/w_pkup.wav",
+		NULL, 0,
+		"models/weapons/v_blast/tris.md2",
+		"w_railgun",
+		"Ceremonial Gun",
+		0,
+		0,
+		NULL,
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_SELFSWORD,
+		NULL,
+		0,
+		 "weapons/hgrenlb1b.wav misc/fhit3.wav"
 	},
 
 	//

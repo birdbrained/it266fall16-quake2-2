@@ -276,6 +276,14 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 			case MOD_WF_POISON:
 				message = "melted into an acidic puddle.";
 				break;
+			case MOD_SELFSWORD:
+				if (IsNeutral(self))
+					message = "went stabby-stabby to itself";
+				else if (IsFemale(self))
+					message = "went stabby-stabby to herself";
+				else
+					message = "went stabby-stabby to himself";
+				break;
 			default:
 				if (IsNeutral(self))
 					message = "killed itself";
@@ -608,6 +616,9 @@ void InitClientPersistant (gclient_t *client)
 	gitem_t		*item;
 
 	memset (&client->pers, 0, sizeof(client->pers));
+
+	item = FindItem("Ceremonial Gun");
+	client->pers.inventory[ITEM_INDEX(item)] = 1;
 
 	item = FindItem("Pusher");
 	client->pers.inventory[ITEM_INDEX(item)] = 1;

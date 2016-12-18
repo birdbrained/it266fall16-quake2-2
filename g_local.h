@@ -214,6 +214,7 @@ typedef struct
 #define WEAP_VAMPIREKNIFE		12
 #define WEAP_POISONARROWS		13
 #define WEAP_PUSHER				14
+#define WEAP_SELFSWORD			15
 
 typedef struct gitem_s
 {
@@ -485,6 +486,7 @@ extern	int	body_armor_index;
 #define MOD_VAMPIREKNIFE    34
 #define MOD_WF_POISON		35
 #define MOD_PUSH			36
+#define MOD_SELFSWORD		37
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;
