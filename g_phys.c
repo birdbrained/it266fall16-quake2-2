@@ -59,10 +59,21 @@ void SV_CheckVelocity (edict_t *ent)
 //
 	for (i=0 ; i<3 ; i++)
 	{
-		if (ent->velocity[i] > sv_maxvelocity->value)
-			ent->velocity[i] = sv_maxvelocity->value;
-		else if (ent->velocity[i] < -sv_maxvelocity->value)
-			ent->velocity[i] = -sv_maxvelocity->value;
+		//gi.dprintf("VELOCITY\n");
+		if (ent->bloodmultiplier == 2)
+		{
+			if (ent->velocity[i] > sv_maxvelocity->value * 2)
+				ent->velocity[i] = sv_maxvelocity->value * 2;
+			else if (ent->velocity[i] < -sv_maxvelocity->value * 2)
+				ent->velocity[i] = -sv_maxvelocity->value * 2;
+		}
+		else
+		{
+			if (ent->velocity[i] > sv_maxvelocity->value)
+				ent->velocity[i] = sv_maxvelocity->value;
+			else if (ent->velocity[i] < -sv_maxvelocity->value)
+				ent->velocity[i] = -sv_maxvelocity->value;
+		}
 	}
 }
 
@@ -181,6 +192,9 @@ int SV_FlyMove (edict_t *ent, float time, int mask)
 	blocked = 0;
 	VectorCopy (ent->velocity, original_velocity);
 	VectorCopy (ent->velocity, primal_velocity);
+
+	//VectorScale(original_velocity, ent->bloodmultiplier, original_velocity);
+	//VectorScale(primal_velocity, ent->bloodmultiplier, primal_velocity);
 	numplanes = 0;
 	
 	time_left = time;
@@ -264,6 +278,7 @@ int SV_FlyMove (edict_t *ent, float time, int mask)
 		
 		if (i != numplanes)
 		{	// go along this plane
+			//VectorScale(new_velocity, ent->bloodmultiplier, new_velocity);
 			VectorCopy (new_velocity, ent->velocity);
 		}
 		else
@@ -302,6 +317,8 @@ SV_AddGravity
 */
 void SV_AddGravity (edict_t *ent)
 {
+	//ent->velocity[0] += ent->bloodmultiplier * FRAMETIME;
+	//ent->velocity[1] += ent->bloodmultiplier * FRAMETIME;
 	ent->velocity[2] -= ent->gravity * sv_gravity->value * FRAMETIME;
 }
 

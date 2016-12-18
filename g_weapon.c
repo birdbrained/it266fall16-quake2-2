@@ -339,23 +339,28 @@ static void Grenade_Explode (edict_t *ent)
 	{
 		mod = MOD_HELD_GRENADE;
 		ent->owner->bloodloss += 30;
-		gi.dprintf("%s's bloodloss: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodloss);
+		//gi.dprintf("%s's bloodloss: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodloss);
 		if (ent->owner->bloodloss >= 150)
 		{
 			ent->owner->bloodmultiplier = 4;
-			
+			ent->owner->max_health = 80;
 		}
 		else if (ent->owner->bloodloss >= 75)
+		{
 			ent->owner->bloodmultiplier = 3;
+			ent->owner->max_health = 130;
+		}
 		else if (ent->owner->bloodloss >= 30)
 		{
 			ent->owner->bloodmultiplier = 2;
-			//angles = ent->client->ps.kick_angles;
-			//VectorCopy (ent->client->kick_angles, angles);
+			ent->owner->max_health = 115;
 		}
 		else 
+		{
 			ent->owner->bloodmultiplier = 1;
-		gi.dprintf("%s's bloodmultiplier: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodmultiplier);
+			ent->owner->max_health = 100;
+		}
+		//gi.dprintf("%s's bloodmultiplier: (%d)\n", ent->owner->client->pers.netname, ent->owner->bloodmultiplier);
 	}
 	else if (ent->spawnflags & 1)
 		mod = MOD_HG_SPLASH;
