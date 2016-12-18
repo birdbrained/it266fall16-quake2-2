@@ -782,18 +782,22 @@ char *dm_statusbar =
 "endif "
 
 // bloodloss
-"xr	0 "
-"yt 2 "
-"num 3 19 "
+//"if 18 "
+	"yb -84 "
+	"xr -58 "
+	"num 3 19 "
+	"xr 10 "
+	"pic 20 "
+//"endif "
 
 
 // bloodmultipler
 "if 20 "
-	"yb	-96"
-	"xr	-58"
-	"num 2	21"
-	"xr	-24"
-	"pic	20"
+	"yb	-107 "
+	"xr	-58 "
+	"num 2	21 "
+	"xr	-24 "
+	"pic	20 "
 "endif"
 
 ;
