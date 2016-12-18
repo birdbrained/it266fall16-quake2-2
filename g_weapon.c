@@ -52,7 +52,7 @@ qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick)
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(Hit) Current damage: (%d)\n", damage);
 
 	//see if enemy is in range
 	VectorSubtract (self->enemy->s.origin, self->s.origin, dir);
@@ -133,7 +133,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 																		//self's origin, start is where the bullet is fired
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(Lead) Current damage: (%d)\n", damage);
 
 	if (!(tr.fraction < 1.0))	//if its 1.0, I hit nothing on my path
 	{
@@ -477,7 +477,7 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(Blaster) Current damage: (%d)\n", damage);
 
 	VectorNormalize (dir);
 
@@ -576,7 +576,7 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(Grenade) Current damage: (%d)\n", damage);
 
 	vectoangles (aimdir, dir);
 	AngleVectors (dir, forward, right, up);
@@ -739,7 +739,7 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(Rocket) Current damage: (%d)\n", damage);
 
 	rocket = G_Spawn();
 	VectorCopy (start, rocket->s.origin);
@@ -788,7 +788,7 @@ void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(Rail) Current damage: (%d)\n", damage);
 
 	VectorMA (start, 8192, aimdir, end);
 	VectorCopy (start, from);
@@ -1013,7 +1013,7 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(BFG) Current damage: (%d)\n", damage);
 
 	bfg = G_Spawn();
 	VectorCopy (start, bfg->s.origin);
@@ -1100,7 +1100,8 @@ void poison_person(edict_t *target, edict_t *owner, int damage)
 	if (target->Poison > 1)
 		return;
 	target->Poison++;
-	poi = G_Spawn();
+
+	/*poi = G_Spawn();
 	//if (!poi)
 	//	return;
 	poi->movetype = MOVETYPE_NOCLIP;
@@ -1125,7 +1126,7 @@ void poison_person(edict_t *target, edict_t *owner, int damage)
 	poi->s.sound = gi.soundindex("weapons/bfg__l1a.wav");
 	gi.linkentity(poi);
 
-	VectorCopy(target->s.origin, poi->s.origin);
+	VectorCopy(target->s.origin, poi->s.origin);*/
 }
 
 void poison_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -1152,13 +1153,17 @@ void poison_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
 {
 	edict_t *poi;
+	trace_t tr;
 
+	gi.dprintf("(P.Arrows) Current damage: (%d)\n", damage);
+	VectorNormalize (dir);
 	poi = G_Spawn();
 	//poi->team = self->team;
 	//if (!poi)
 	//	return;
+	poi->svflags = SVF_DEADMONSTER;
 	VectorCopy(start, poi->s.origin);
-	VectorCopy(dir, poi->movedir);
+	VectorCopy(start, poi->s.old_origin);
 	vectoangles(dir, poi->s.angles);
 	VectorScale(dir, speed, poi->velocity);
 	poi->movetype = MOVETYPE_FLYMISSILE;
@@ -1181,35 +1186,48 @@ void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int 
 	
 
 	/*
-		rocket = G_Spawn();
-	VectorCopy (start, rocket->s.origin);
-	VectorCopy (dir, rocket->movedir);
-	vectoangles (dir, rocket->s.angles);
-	VectorScale (dir, speed, rocket->velocity);
-	rocket->movetype = MOVETYPE_TOSS; //MOVETYPE_FLYMISSLE
-	rocket->clipmask = MASK_SHOT;
-	rocket->solid = SOLID_BBOX;
-	rocket->s.effects |= EF_ROCKET;
-	VectorClear (rocket->mins);
-	VectorClear (rocket->maxs);
-	rocket->s.modelindex = gi.modelindex ("models/objects/ships/viper.md2"); //"models/objects/ships/viper.md2" "models/objects/rocket/tris.md2" 
-	rocket->owner = self;
-	rocket->touch = rocket_touch;
-	//rocket->nextthink = level.time + 8000/speed;
-	rocket->nextthink = level.time + 0.5;
-	//rocket->think = G_FreeEdict;
-	rocket->think = rocket_think;
-	rocket->dmg = damage;
-	rocket->radius_dmg = radius_damage;
-	rocket->dmg_radius = damage_radius;
-	rocket->s.sound = gi.soundindex ("weapons/rockfly.wav");
-	rocket->classname = "rocket";
+	bolt = G_Spawn();	//looks through the god array and looks for 1 instance in the array that is not in use, and returns that spot
+	bolt->svflags = SVF_DEADMONSTER;
+	// yes, I know it looks weird that projectiles are deadmonsters
+	// what this means is that when prediction is used against the object
+	// (blaster/hyperblaster shots), the player won't be solid clipped against
+	// the object.  Right now trying to run into a firing hyperblaster
+	// is very jerky since you are predicted 'against' the shots.
+	VectorCopy (start, bolt->s.origin);
+	VectorCopy (start, bolt->s.old_origin);
+	vectoangles (dir, bolt->s.angles);
+	VectorScale (dir, speed, bolt->velocity);
+	bolt->movetype = MOVETYPE_FLYMISSILE;
+	bolt->clipmask = MASK_SHOT;
+	bolt->solid = SOLID_BBOX;
+	bolt->s.effects |= effect;
+	VectorClear (bolt->mins);
+	VectorClear (bolt->maxs);
+	bolt->s.modelindex = gi.modelindex ("models/ships/viper/tris.md2");
+	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
+	bolt->owner = self;	//who shot the gun
+	bolt->touch = pusher_touch;
+	//gi.dprintf("Crosstime after function is: %f\n", crosstime);
+	//gi.dprintf("level.time(%f) + crosstime(%f): %f\n", level.time, crosstime, level.time + crosstime);
+	//gi.dprintf
+	bolt->nextthink = level.time + crosstime + 0.70;
+	bolt->think = G_FreeEdict;	// frees up an entity that has previously been used, so the memory location can be used again
+								// G_FreeEdict
+	bolt->dmg = damage;
+	bolt->classname = "bolt";
+	gi.linkentity (bolt);	//gi is the class of function that commincates to the game engine
 	*/
-
+	gi.linkentity(poi);
 	if (self->client)
 		check_dodge(self, poi->s.origin, dir, speed);
 
-	gi.linkentity(poi);
+	tr = gi.trace (self->s.origin, NULL, NULL, poi->s.origin, poi, MASK_SHOT); //from player origin to the center of where the bolt will be created
+	if (tr.fraction < 1.0) //did you hit anything? < 1 means you did.
+	{
+		VectorMA (poi->s.origin, -10, dir, poi->s.origin);
+		poi->touch (poi, tr.ent, NULL, NULL); //prevents shooting through walls, players, etc.
+	}
+	
 }
 
 //
@@ -1246,6 +1264,7 @@ void pusher_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *s
 	int		mod;
 	vec3_t aimdir;
 
+
 	if (other == self->owner)
 		return;
 	/*
@@ -1270,8 +1289,9 @@ void pusher_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *s
 	if (other->takedamage)
 	{
 		mod = MOD_PUSH;
-		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
-		push_or_pull(other, 0);
+		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 7000, DAMAGE_ENERGY, mod);
+		//push_or_pull(other, 0);
+		/* PUSH THEM! */
 	}
 	else
 	{
@@ -1304,7 +1324,7 @@ void fire_pusher (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
-	gi.dprintf("Current damage: (%d)\n", damage);
+	gi.dprintf("(Pusher) Current damage: (%d)\n", damage);
 
 	VectorNormalize (dir);
 

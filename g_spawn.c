@@ -682,6 +682,25 @@ char *single_statusbar =
 "	xv	148 "
 "	pic	11 "
 "endif "
+
+// bloodloss
+//"if 18 "
+	"yb -84 "
+	"xr -58 "
+	"num 3 19 "
+	"xr 10 "
+	"pic 20 "
+//"endif "
+
+
+// bloodmultipler
+"if 20 "
+	"yb	-107 "
+	"xr	-58 "
+	"num 2	21 "
+	"xr	-24 "
+	"pic	20 "
+"endif"
 ;
 
 char *dm_statusbar =
