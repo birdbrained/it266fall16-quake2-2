@@ -487,6 +487,7 @@ extern	int	body_armor_index;
 #define MOD_WF_POISON		35
 #define MOD_PUSH			36
 #define MOD_SELFSWORD		37
+#define MOD_BLOODLOSS		38
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;
@@ -1113,6 +1114,10 @@ struct edict_s
 	float		PoisonDelay;
 	int			Poison;
 	int			PoisonDamage;
+
+	// BLOOD DRUNK!
+	float		DamageDelay;
+	float		DamageTime;
 	
 };
 

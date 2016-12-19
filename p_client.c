@@ -284,6 +284,9 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				else
 					message = "went stabby-stabby to himself";
 				break;
+			case MOD_BLOODLOSS:
+				message = "died from being blood drunk";
+				break;
 			default:
 				if (IsNeutral(self))
 					message = "killed itself";
@@ -550,6 +553,9 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	// Remove blood loss stuff
 	self->bloodloss = 0;
 	self->bloodmultiplier = 1;
+
+	//health delay
+	self->DamageDelay = 30;
 
 	if (self->health < -40)
 	{	// gib
@@ -1339,6 +1345,7 @@ void ClientBegin (edict_t *ent)
 
 	ent->bloodloss = 0;
 	ent->bloodmultiplier = 1;
+	ent->DamageDelay = 30;
 
 	if (deathmatch->value)
 	{
@@ -1616,6 +1623,13 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	int		i, j;
 	pmove_t	pm;
 
+	// For bleeding state
+	vec3_t forward, right, mouth_pos, spew_vector;
+	float rambo;
+	//int i;
+	trace_t tr;
+	//
+
 	level.current_entity = ent;
 	client = ent->client;
 
@@ -1782,6 +1796,44 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		other = g_edicts + i;
 		if (other->inuse && other->client->chase_target == ent)
 			UpdateChaseCam(other);
+	}
+
+	if (ent->bloodmultiplier == 4)
+	{
+		ent->DamageTime++;
+		if (ent->DamageTime >= ent->DamageDelay)
+		{
+			ent->DamageTime = 0;
+			//ent->health -= 2;
+			tr = gi.trace (ent->s.origin, NULL, NULL, ent->s.origin, ent, MASK_SHOT);
+			//T_Damage(self, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_SELFSWORD);
+
+
+			// Set the spew vector based on the client's (the player's) view angle
+			AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+			// Make the spew start from the mouth
+			VectorScale(forward, 24, mouth_pos);
+			VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
+			mouth_pos[2] += ent->viewheight;
+
+			// Make the spew come forward from the mouth
+			VectorScale(forward, 24, spew_vector);
+
+			// Make the BLOOD particle effect
+			gi.WriteByte(svc_temp_entity);
+			gi.WriteByte(TE_BLOOD);
+			gi.WritePosition(mouth_pos);
+			gi.WriteDir(spew_vector);
+			gi.multicast(mouth_pos, MULTICAST_PVS);
+			
+			T_Damage(ent, ent, ent, forward, tr.endpos, tr.plane.normal, 2, 0, 0, MOD_BLOODLOSS);
+
+			if (ent->health <= 0)
+			{
+				player_die(ent, ent, ent, 1, ent->s.origin);
+			}
+		}
 	}
 }
 

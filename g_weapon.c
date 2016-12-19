@@ -282,7 +282,7 @@ Shoots shotgun pellets.  Used by shotgun and super shotgun.
 void fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int hspread, int vspread, int count, int mod)
 {
 	int		i;
-
+	count *= self->bloodmultiplier;
 	for (i = 0; i < count; i++)
 		fire_lead (self, start, aimdir, damage, kick, TE_SHOTGUN, hspread, vspread, mod);
 }
@@ -751,7 +751,10 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	VectorCopy (dir, rocket->movedir);
 	vectoangles (dir, rocket->s.angles);
 	VectorScale (dir, speed, rocket->velocity);
-	rocket->movetype = MOVETYPE_TOSS; //MOVETYPE_FLYMISSLE
+	if (self->bloodmultiplier < 3)
+		rocket->movetype = MOVETYPE_TOSS;
+	else
+		rocket->movetype = MOVETYPE_FLYMISSILE;
 	rocket->clipmask = MASK_SHOT;
 	rocket->solid = SOLID_BBOX;
 	rocket->s.effects |= EF_ROCKET;
