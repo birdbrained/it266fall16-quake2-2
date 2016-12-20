@@ -440,7 +440,12 @@ void SV_CalcBlend (edict_t *ent)
 
 	// Add green tinge for poisoned
 	if (ent->isPoisoned > 0)
-		SV_AddBlend(0.0, 0.7, 0.1, 0.3, ent->client->ps.blend);
+		SV_AddBlend(0.0, 0.7, 0.1, 0.2, ent->client->ps.blend);
+
+	// Add yellow/orange tinge for ON FYA!!!
+	if (ent->isOnFya > 0)
+		SV_AddBlend(0.64, 0.09, 0.08, 0.2, ent->client->ps.blend);
+
 
 	// add for powerups
 	if (ent->client->quad_framenum > level.framenum)

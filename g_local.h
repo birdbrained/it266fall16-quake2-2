@@ -215,6 +215,7 @@ typedef struct
 #define WEAP_POISONARROWS		13
 #define WEAP_PUSHER				14
 #define WEAP_SELFSWORD			15
+#define WEAP_FYA_RAILGUN		16
 
 typedef struct gitem_s
 {
@@ -488,6 +489,8 @@ extern	int	body_armor_index;
 #define MOD_PUSH			36
 #define MOD_SELFSWORD		37
 #define MOD_BLOODLOSS		38
+#define MOD_FYA_BURN		39
+#define MOD_FYA_RAIL		40
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;
@@ -727,6 +730,7 @@ void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
 void fire_poison_arrow (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
 void fire_pusher (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect);
+void fire_fya_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
 
 //
 // g_ptrail.c
@@ -1116,6 +1120,13 @@ struct edict_s
 	int			PoisonTime;
 	float		PoisonTotalTime;
 	int			PoisonDamage;
+
+	// Fire!!!!!!! IT BURNS!!!!
+	int			FyaDelay;
+	int			FyaTime;
+	int			FyaTotalTime;
+	int			FyaDamage;
+	int			isOnFya;
 
 	// BLOOD DRUNK!
 	float		DamageDelay;

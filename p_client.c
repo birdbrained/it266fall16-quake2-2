@@ -276,6 +276,9 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 			case MOD_WF_POISON:
 				message = "melted into an acidic puddle";
 				break;
+			case MOD_FYA_BURN:
+				message = "burned from the FYA";
+				break;
 			case MOD_SELFSWORD:
 				if (IsNeutral(self))
 					message = "went stabby-stabby to itself";
@@ -385,6 +388,12 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				break;
 			case MOD_PUSH:
 				message = "was slightly nudged by";
+				break;
+			case MOD_FYA_RAIL:
+				message = "was FIYArailed by";
+				break;
+			default:
+				message = "somehow died by";
 				break;
 			}
 			if (message)
@@ -558,10 +567,18 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	self->DamageDelay = 30;
 
 	//poison delay
-	self->isPoisoned = false;
+	self->isPoisoned = 0;
 	self->PoisonDelay = 60;
 	self->PoisonDamage = 5;
+	self->PoisonTime = 0;
 	self->PoisonTotalTime = 540;
+
+	//fya delay
+	self->isOnFya = 0;
+	self->FyaDelay = 30;
+	self->FyaTime = 0;
+	self->FyaTotalTime = 540;
+	self->FyaDamage = 7;
 
 	if (self->health < -40)
 	{	// gib
@@ -629,6 +646,9 @@ void InitClientPersistant (gclient_t *client)
 
 	memset (&client->pers, 0, sizeof(client->pers));
 
+	item = FindItem("FIYA Railgun");
+	client->pers.inventory[ITEM_INDEX(item)] = 2;
+
 	item = FindItem("Ceremonial Gun");
 	client->pers.inventory[ITEM_INDEX(item)] = 1;
 
@@ -646,6 +666,9 @@ void InitClientPersistant (gclient_t *client)
 	client->pers.inventory[client->pers.selected_item] = 1;
 
 	item = FindItem("Cells");
+	client->pers.inventory[ITEM_INDEX(item)] = 10;
+
+	item = FindItem("Slugs");
 	client->pers.inventory[ITEM_INDEX(item)] = 10;
 
 	item = FindItem("Grenades");
@@ -1352,10 +1375,19 @@ void ClientBegin (edict_t *ent)
 	ent->bloodloss = 0;
 	ent->bloodmultiplier = 1;
 	ent->DamageDelay = 30;
-	ent->isPoisoned = false;
+
+	//poison
+	ent->isPoisoned = 0;
 	ent->PoisonDelay = 60;
 	ent->PoisonDamage = 5;
 	ent->PoisonTotalTime = 540;
+
+	//fya delay
+	ent->isOnFya = 0;
+	ent->FyaDelay = 30;
+	ent->FyaTime = 0;
+	ent->FyaTotalTime = 540;
+	ent->FyaDamage = 7;
 
 	if (deathmatch->value)
 	{
@@ -1853,38 +1885,74 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	{
 		//gi.dprintf("Poisoned!");
 		ent->PoisonTime++;
+
+		// Set the spew vector based on the client's (the player's) view angle
+		AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+		// Make the spew start from the mouth
+		VectorScale(forward, 24, mouth_pos);
+		VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
+
+		// Make the spew come forward from the mouth
+		VectorScale(forward, 24, spew_vector);
+
+		// Make the particle effect
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_GREENBLOOD);
+		gi.WritePosition(mouth_pos);
+		gi.WriteDir(spew_vector);
+		gi.multicast(mouth_pos, MULTICAST_PVS);
+
 		if (ent->PoisonTime % ent->PoisonDelay == 0 || ent->PoisonTime == 1)
 		{
 			if (ent->PoisonTime <= ent->PoisonTotalTime)
 			{
 				tr = gi.trace (ent->s.origin, NULL, NULL, ent->s.origin, ent, MASK_SHOT);
-				//T_Damage(self, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_SELFSWORD);
-
-
-				// Set the spew vector based on the client's (the player's) view angle
-				AngleVectors(ent->client->v_angle, forward, right, NULL);
-
-				// Make the spew start from the mouth
-				VectorScale(forward, 24, mouth_pos);
-				VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
-				mouth_pos[2] += ent->viewheight;
-
-				// Make the spew come forward from the mouth
-				VectorScale(forward, 24, spew_vector);
-
-				// Make the BLOOD particle effect
-				gi.WriteByte(svc_temp_entity);
-				gi.WriteByte(TE_GREENBLOOD);
-				gi.WritePosition(mouth_pos);
-				gi.WriteDir(spew_vector);
-				gi.multicast(mouth_pos, MULTICAST_PVS);
-			
-				T_Damage(ent, ent, ent, forward, tr.endpos, tr.plane.normal, 2, 0, 0, MOD_WF_POISON);
+				T_Damage(ent, ent, ent, forward, tr.endpos, tr.plane.normal, ent->PoisonDamage, 0, 0, MOD_WF_POISON);
 			}
 			else
 			{
 				ent->isPoisoned = 0;
 				ent->PoisonTime = 0;
+			}
+		}
+		
+	}
+
+	//FYA!!!!!
+	if (ent->isOnFya == 1)
+	{
+		//gi.dprintf("Poisoned!");
+		ent->FyaTime++;
+
+		// Set the spew vector based on the client's (the player's) view angle
+		AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+		// Make the spew start from the mouth
+		VectorScale(forward, 24, mouth_pos);
+		VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
+
+		// Make the spew come forward from the mouth
+		VectorScale(forward, 24, spew_vector);
+
+		// Make the particle effect
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_SPARKS);
+		gi.WritePosition(mouth_pos);
+		gi.WriteDir(spew_vector);
+		gi.multicast(mouth_pos, MULTICAST_PVS);
+
+		if (ent->FyaTime % ent->FyaDelay == 0 || ent->FyaTime == 1)
+		{
+			if (ent->FyaTime <= ent->FyaTotalTime)
+			{
+				tr = gi.trace (ent->s.origin, NULL, NULL, ent->s.origin, ent, MASK_SHOT);
+				T_Damage(ent, ent, ent, forward, tr.endpos, tr.plane.normal, ent->PoisonDamage, 0, 0, MOD_FYA_BURN);
+			}
+			else
+			{
+				ent->isOnFya = 0;
+				ent->FyaTime = 0;
 			}
 		}
 		

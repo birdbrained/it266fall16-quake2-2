@@ -22,6 +22,7 @@ void Weapon_Sword (edict_t *ent);
 void Weapon_PoisonArrows (edict_t *ent);
 void Weapon_Pusher (edict_t *ent);
 void Weapon_SelfSword(edict_t *ent);
+void Weapon_Fya_Railgun (edict_t *ent);
 // Back to stuff
 
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
@@ -1627,6 +1628,27 @@ always owned, never in the world
 		NULL,
 		0,
 		 "weapons/hgrenlb1b.wav misc/fhit3.wav"
+	},
+
+		{
+		"weapon_fya_railgun", 
+		Pickup_Weapon,
+		Use_Weapon,
+		Drop_Weapon,
+		Weapon_Fya_Railgun,
+		"misc/w_pkup.wav",
+		"models/weapons/g_rail/tris.md2", EF_ROTATE,
+		"models/weapons/v_rail/tris.md2",
+/* icon */		"w_railgun",
+/* pickup */	"FIYA Railgun",
+		0,
+		2,
+		"Slugs",
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_FYA_RAILGUN,
+		NULL,
+		0,
+/* precache */ "weapons/rg_hum.wav"
 	},
 
 	//
