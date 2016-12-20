@@ -1404,7 +1404,6 @@ void poison_arrow_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 {
 	int		mod;
 	vec3_t aimdir;
-	self->owner->isPoisoned = 1;
 
 	if (other == self->owner)
 		return;
@@ -1452,6 +1451,7 @@ void fire_poison_arrow (edict_t *self, vec3_t start, vec3_t dir, int damage, int
 
 	VectorNormalize (dir);
 
+	//self->isPoisoned = 1;
 	bolt = G_Spawn();	//looks through the god array and looks for 1 instance in the array that is not in use, and returns that spot
 	bolt->svflags = SVF_DEADMONSTER;
 	// yes, I know it looks weird that projectiles are deadmonsters
@@ -1521,7 +1521,7 @@ void fire_fya_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 	ignore = self;
 	water = false;
 	mask = MASK_SHOT|CONTENTS_SLIME|CONTENTS_LAVA;
-	self->isOnFya = 1;
+	//self->isOnFya = 1;
 
 	while (ignore)
 	{

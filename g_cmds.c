@@ -1002,6 +1002,10 @@ void ClientCommand (edict_t *ent)
 		ent->bloodmultiplier = 4;
 	else if (Q_stricmp(cmd, "663") == 0)
 		ent->bloodmultiplier = 3;
+	else if (Q_stricmp(cmd, "poison") == 0)
+		ent->isPoisoned = 1;
+	else if (Q_stricmp(cmd, "fiya") == 0 || Q_stricmp(cmd, "fya") == 0)
+		ent->isOnFya = 1;
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }
