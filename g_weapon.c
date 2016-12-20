@@ -1388,7 +1388,7 @@ void poison_arrow_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 {
 	int		mod;
 	vec3_t aimdir;
-
+	self->owner->isPoisoned = 1;
 
 	if (other == self->owner)
 		return;
@@ -1406,7 +1406,7 @@ void poison_arrow_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 	{
 		mod = MOD_PUSH;
 		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 5, DAMAGE_ENERGY, mod);
-		other->isPoisoned = true;
+		other->isPoisoned = 1;
 	}
 	else
 	{

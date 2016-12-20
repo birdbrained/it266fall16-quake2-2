@@ -1120,7 +1120,7 @@ struct edict_s
 	// BLOOD DRUNK!
 	float		DamageDelay;
 	float		DamageTime;
-	qboolean	isPoisoned;
+	int			isPoisoned;
 	
 };
 

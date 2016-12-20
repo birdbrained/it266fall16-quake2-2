@@ -274,7 +274,7 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "should have used a smaller gun";
 				break;
 			case MOD_WF_POISON:
-				message = "melted into an acidic puddle.";
+				message = "melted into an acidic puddle";
 				break;
 			case MOD_SELFSWORD:
 				if (IsNeutral(self))
@@ -1846,12 +1846,14 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			}
 		}
 	}
-
+	
+	//gi.dprintf("Poisoned (%d)\n", ent->isPoisoned);
 	// Damage if you are poisoned
-	if (ent->isPoisoned)
+	if (ent->isPoisoned == 1)
 	{
+		//gi.dprintf("Poisoned!");
 		ent->PoisonTime++;
-		if (ent->PoisonTime % ent->PoisonDelay == 0)
+		if (ent->PoisonTime % ent->PoisonDelay == 0 || ent->PoisonTime == 1)
 		{
 			if (ent->PoisonTime <= ent->PoisonTotalTime)
 			{
@@ -1881,7 +1883,8 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			}
 			else
 			{
-				ent->isPoisoned = false;
+				ent->isPoisoned = 0;
+				ent->PoisonTime = 0;
 			}
 		}
 		
