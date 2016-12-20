@@ -569,8 +569,8 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	//poison delay
 	self->isPoisoned = 0;
 	self->PoisonDelay = 60;
-	self->PoisonDamage = 5;
-	self->PoisonTime = 0;
+	self->PoisonDamage = 3;
+	//self->PoisonTime = 0;
 	self->PoisonTotalTime = 540;
 
 	//fya delay
@@ -1379,7 +1379,7 @@ void ClientBegin (edict_t *ent)
 	//poison
 	ent->isPoisoned = 0;
 	ent->PoisonDelay = 60;
-	ent->PoisonDamage = 5;
+	ent->PoisonDamage = 3;
 	ent->PoisonTotalTime = 540;
 
 	//fya delay

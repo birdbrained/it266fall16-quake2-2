@@ -52,6 +52,8 @@ qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick)
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(Hit) Current damage: (%d)\n", damage);
 
 	//see if enemy is in range
@@ -133,6 +135,8 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 																		//self's origin, start is where the bullet is fired
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(Lead) Current damage: (%d)\n", damage);
 
 	if (!(tr.fraction < 1.0))	//if its 1.0, I hit nothing on my path
@@ -482,6 +486,8 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(Blaster) Current damage: (%d)\n", damage);
 
 	VectorNormalize (dir);
@@ -581,6 +587,8 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(Grenade) Current damage: (%d)\n", damage);
 
 	vectoangles (aimdir, dir);
@@ -744,6 +752,8 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(Rocket) Current damage: (%d)\n", damage);
 
 	rocket = G_Spawn();
@@ -796,6 +806,8 @@ void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(Rail) Current damage: (%d)\n", damage);
 
 	VectorMA (start, 8192, aimdir, end);
@@ -1021,6 +1033,8 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(BFG) Current damage: (%d)\n", damage);
 
 	bfg = G_Spawn();
@@ -1335,6 +1349,8 @@ void fire_pusher (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(Pusher) Current damage: (%d)\n", damage);
 
 	VectorNormalize (dir);
@@ -1430,6 +1446,8 @@ void fire_poison_arrow (edict_t *self, vec3_t start, vec3_t dir, int damage, int
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage *= 3;
 	gi.dprintf("(P.Arrow) Current damage: (%d)\n", damage);
 
 	VectorNormalize (dir);
@@ -1494,6 +1512,8 @@ void fire_fya_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 
 	// scale damage by the multipler that you have
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	gi.dprintf("(F.Rail) Current damage: (%d)\n", damage);
 
 	VectorMA (start, 8192, aimdir, end);

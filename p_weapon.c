@@ -1498,6 +1498,8 @@ void fire_sword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 	vec3_t dir, forward, right, up, end;
 	int bloodsteal;
 	damage /= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	bloodsteal = self->bloodmultiplier * 5;
 
 	gi.dprintf("(Vamp) Current damage: (%d)\n", damage);
@@ -1606,6 +1608,8 @@ void fire_selfsword(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 	vec3_t dir, forward, right, up, end;
 	int bloodincr;
 	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
 	bloodincr = 10 / self->bloodmultiplier;
 
 	gi.dprintf("(Self S.) Current damage: (%d)\n", damage);
