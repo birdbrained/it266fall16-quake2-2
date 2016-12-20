@@ -543,6 +543,29 @@ qboolean monster_start (edict_t *self)
 	self->deadflag = DEAD_NO;
 	self->svflags &= ~SVF_DEADMONSTER;
 
+	//YAYAYAYA
+	//poison
+	self->isPoisoned = 0;
+	self->PoisonDelay = 60;
+	self->PoisonDamage = 3;
+	self->PoisonTotalTime = 540;
+
+	//fya delay
+	self->isOnFya = 0;
+	self->FyaDelay = 30;
+	self->FyaTime = 0;
+	self->FyaTotalTime = 540;
+	self->FyaDamage = 7;
+
+	//frozen delay
+	self->isFrozen = 0;
+	self->FrozenDelay = 30;
+	self->FrozenTime = 0;
+	self->FrozenTotalTime = 300;
+	self->FrozenDamage = 1;
+
+	//aw
+
 	if (!self->monsterinfo.checkattack)
 		self->monsterinfo.checkattack = M_CheckAttack;
 	VectorCopy (self->s.origin, self->s.old_origin);
@@ -564,6 +587,13 @@ qboolean monster_start (edict_t *self)
 void monster_start_go (edict_t *self)
 {
 	vec3_t	v;
+
+	// For bleeding state
+	vec3_t forward, right, mouth_pos, spew_vector;
+	float rambo;
+	int i;
+	trace_t tr;
+	//
 
 	if (self->health <= 0)
 		return;
@@ -646,6 +676,126 @@ void monster_start_go (edict_t *self)
 
 	self->think = monster_think;
 	self->nextthink = level.time + FRAMETIME;
+
+	// Damage if you are poisoned
+	if (self->isPoisoned == 1)
+	{
+		//gi.dprintf("Poisoned!");
+		self->PoisonTime++;
+
+		// Set the spew vector based on the client's (the player's) view angle
+		AngleVectors(self->client->v_angle, forward, right, NULL);
+
+		// Make the spew start from the mouth
+		VectorScale(forward, 24, mouth_pos);
+		VectorAdd(mouth_pos, self->s.origin, mouth_pos);
+
+		// Make the spew come forward from the mouth
+		VectorScale(forward, 24, spew_vector);
+
+		// Make the particle effect
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_GREENBLOOD);
+		gi.WritePosition(mouth_pos);
+		gi.WriteDir(spew_vector);
+		gi.multicast(mouth_pos, MULTICAST_PVS);
+
+		if (self->PoisonTime % self->PoisonDelay == 0 || self->PoisonTime == 1)
+		{
+			if (self->PoisonTime <= self->PoisonTotalTime)
+			{
+				tr = gi.trace (self->s.origin, NULL, NULL, self->s.origin, self, MASK_SHOT);
+				T_Damage(self, self, self, forward, tr.endpos, tr.plane.normal, self->PoisonDamage, 0, 0, MOD_WF_POISON);
+			}
+			else
+			{
+				self->isPoisoned = 0;
+				self->PoisonTime = 0;
+			}
+		}
+		
+	}
+
+	//FYA!!!!!
+	if (self->isOnFya == 1)
+	{
+		self->FyaTime++;
+
+		// Set the spew vector based on the client's (the player's) view angle
+		AngleVectors(self->client->v_angle, forward, right, NULL);
+
+		// Make the spew start from the mouth
+		VectorScale(forward, 24, mouth_pos);
+		VectorAdd(mouth_pos, self->s.origin, mouth_pos);
+
+		// Make the spew come forward from the mouth
+		VectorScale(forward, 24, spew_vector);
+
+		// Make the particle effect
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_SPARKS);
+		gi.WritePosition(mouth_pos);
+		gi.WriteDir(spew_vector);
+		gi.multicast(mouth_pos, MULTICAST_PVS);
+
+		if (self->FyaTime % self->FyaDelay == 0 || self->FyaTime == 1)
+		{
+			if (self->FyaTime <= self->FyaTotalTime)
+			{
+				tr = gi.trace (self->s.origin, NULL, NULL, self->s.origin, self, MASK_SHOT);
+				T_Damage(self, self, self, forward, tr.endpos, tr.plane.normal, self->PoisonDamage, 0, 0, MOD_FYA_BURN);
+			}
+			else
+			{
+				self->isOnFya = 0;
+				self->FyaTime = 0;
+			}
+		}
+		
+	}
+
+	//Frozen
+	if (self->isFrozen == 1)
+	{
+		self->FrozenTime++;
+		self->speed = 0;
+		self->velocity[0] = 0;
+		self->velocity[1] = 0;
+		self->velocity[2] = 0;
+
+		// Set the spew vector based on the client's (the player's) view angle
+		AngleVectors(self->client->v_angle, forward, right, NULL);
+
+		// Make the spew start from the mouth
+		VectorScale(forward, 24, mouth_pos);
+		VectorAdd(mouth_pos, self->s.origin, mouth_pos);
+
+		// Make the spew come forward from the mouth
+		VectorScale(forward, 24, spew_vector);
+
+		// Make the particle effect
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_SHIELD_SPARKS); //TE_SPARKS
+		gi.WritePosition(mouth_pos);
+		gi.WriteDir(spew_vector);
+		gi.multicast(mouth_pos, MULTICAST_PVS);
+
+		if (self->FrozenTime % self->FrozenDelay == 0 || self->FrozenTime == 1)
+		{
+			if (self->FrozenTime <= self->FrozenTotalTime)
+			{
+				tr = gi.trace (self->s.origin, NULL, NULL, self->s.origin, self, MASK_SHOT);
+				T_Damage(self, self, self, forward, tr.endpos, tr.plane.normal, self->FrozenDamage, 0, 0, MOD_FREEZE);
+			}
+			else
+			{
+				self->isFrozen = 0;
+				self->FrozenTime = 0;
+				self->movetype = MOVETYPE_WALK;
+			}
+		}
+		
+	}
 }
 
 
