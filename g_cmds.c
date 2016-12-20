@@ -996,8 +996,18 @@ void ClientCommand (edict_t *ent)
 		Cmd_PlayerList_f(ent);
 	else if (Q_stricmp(cmd, "throwup") == 0)
 		ThrowUpNow(ent);
-	else if (Q_stricmp(cmd, "blood") == 0)
-		DrawBloodBars(ent);
+	else if (Q_stricmp(cmd, "blood") == 0 || Q_stricmp(cmd, "b") == 0 || Q_stricmp(cmd, "yum") == 0)
+	{
+		ent->bloodloss += 10;
+		if (ent->bloodloss >= 150)
+			ent->bloodmultiplier = 4;
+		else if (ent->bloodloss >= 75)
+			ent->bloodmultiplier = 3;
+		else if (ent->bloodloss >= 30)
+			ent->bloodmultiplier = 2;
+		else 
+			ent->bloodmultiplier = 1;
+	}
 	else if (Q_stricmp(cmd, "666") == 0)
 		ent->bloodmultiplier = 4;
 	else if (Q_stricmp(cmd, "663") == 0)

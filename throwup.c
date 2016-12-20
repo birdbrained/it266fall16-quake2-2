@@ -72,7 +72,7 @@ void ThrowUpNow(edict_t *self)
 			self->bloodmultiplier = 2;
 		else 
 			self->bloodmultiplier = 1;
-		gi.dprintf("Barfed! New bloodloss: (%d), New bloodmultiplier: (%d)\n", self->bloodloss, self->bloodmultiplier);
+		//gi.dprintf("Barfed! New bloodloss: (%d), New bloodmultiplier: (%d)\n", self->bloodloss, self->bloodmultiplier);
 		//gi.dprintf("%s's new bloodmultiplier: (%d)\n", self->owner->client->pers.netname, self->bloodmultiplier);
 	}
 }

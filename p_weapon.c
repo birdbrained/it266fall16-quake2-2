@@ -1998,7 +1998,7 @@ void Blackout_Fire (edict_t *ent, vec3_t g_offset, int damage, int effect)
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
 	gi.WriteShort (ent-g_edicts);
-	gi.WriteByte (MZ_BLASTER | is_silenced);
+	gi.WriteByte (MZ_RESPAWN | is_silenced);
 	gi.multicast (ent->s.origin, MULTICAST_PVS);
 
 	PlayerNoise(ent, start, PNOISE_WEAPON);
