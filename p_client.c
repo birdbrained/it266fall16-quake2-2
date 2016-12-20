@@ -1875,6 +1875,9 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	if (ent->bloodmultiplier == 4)
 	{
 		ent->DamageTime++;
+		ent->velocity[0] *= 1.1;
+		ent->velocity[1] *= 1.1;
+		ent->velocity[2] *= 1.1;
 		if (ent->DamageTime >= ent->DamageDelay)
 		{
 			ent->DamageTime = 0;
