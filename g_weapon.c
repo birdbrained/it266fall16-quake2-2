@@ -1571,3 +1571,96 @@ void fire_fya_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 		PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
 }
 
+
+// ICE MISSLES
+void ice_missile_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	vec3_t		origin;
+	int			n;
+
+	if (other == ent->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict (ent);
+		return;
+	}
+
+	if (ent->owner->client)
+		PlayerNoise(ent->owner, ent->s.origin, PNOISE_IMPACT);
+
+	// calculate position for the explosion entity
+	VectorMA (ent->s.origin, -0.02, ent->velocity, origin);
+
+	if (other->takedamage)
+	{
+		T_Damage (other, ent, ent->owner, ent->velocity, ent->s.origin, plane->normal, ent->dmg, 0, 0, MOD_ICE_MISSILE);
+		other->isFrozen = 1;
+	}
+	else
+	{
+		// don't throw any debris in net games
+		if (!deathmatch->value && !coop->value)
+		{
+			if ((surf) && !(surf->flags & (SURF_WARP|SURF_TRANS33|SURF_TRANS66|SURF_FLOWING)))
+			{
+				n = rand() % 5;
+				while(n--)
+					ThrowDebris (ent, "models/objects/debris2/tris.md2", 2, ent->s.origin);
+			}
+		}
+	}
+
+	T_RadiusDamage(ent, ent->owner, ent->radius_dmg, other, ent->dmg_radius, MOD_ICE_SPLASH);
+
+	gi.WriteByte (svc_temp_entity);
+	if (ent->waterlevel)
+		gi.WriteByte (TE_PLASMA_EXPLOSION); //TE_ROCKET_EXPLOSION_WATER
+	else
+		gi.WriteByte (TE_PLASMA_EXPLOSION); //TE_ROCKET_EXPLOSION
+	gi.WritePosition (origin);
+	gi.multicast (ent->s.origin, MULTICAST_PHS);
+
+	G_FreeEdict (ent);
+}
+
+void fire_ice_missile (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage)
+{
+	edict_t	*missile;
+
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	if (self->isPoisoned > 0)
+		damage /= 3;
+	gi.dprintf("(I.Missile) Current damage: (%d)\n", damage);
+
+	missile = G_Spawn();
+	VectorCopy (start, missile->s.origin);
+	VectorCopy (dir, missile->movedir);
+	vectoangles (dir, missile->s.angles);
+	VectorScale (dir, speed, missile->velocity);
+	missile->movetype = MOVETYPE_FLYMISSILE;
+	missile->clipmask = MASK_SHOT;
+	missile->solid = SOLID_BBOX;
+	missile->s.effects |= EF_PLASMA; //EF_ROCKET
+	VectorClear (missile->mins);
+	VectorClear (missile->maxs);
+	missile->s.modelindex = gi.modelindex ("models/objects/rocket/tris.md2"); //"models/objects/ships/viper.md2" "models/objects/rocket/tris.md2" 
+	missile->owner = self;
+	missile->touch = rocket_touch;
+	missile->nextthink = level.time + 8000/speed;
+	missile->think = G_FreeEdict;
+	missile->dmg = damage;
+	missile->radius_dmg = radius_damage;
+	missile->dmg_radius = damage_radius;
+	missile->s.sound = gi.soundindex ("weapons/rockfly.wav");
+	missile->classname = "rocket";
+
+	if (self->client)
+		check_dodge (self, missile->s.origin, dir, speed);
+
+	gi.linkentity (missile);
+}
+
+

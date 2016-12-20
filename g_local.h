@@ -216,6 +216,7 @@ typedef struct
 #define WEAP_PUSHER				14
 #define WEAP_SELFSWORD			15
 #define WEAP_FYA_RAILGUN		16
+#define WEAP_ICE_MISSILE		17
 
 typedef struct gitem_s
 {
@@ -491,6 +492,9 @@ extern	int	body_armor_index;
 #define MOD_BLOODLOSS		38
 #define MOD_FYA_BURN		39
 #define MOD_FYA_RAIL		40
+#define MOD_ICE_MISSILE		41
+#define MOD_FREEZE			42
+#define MOD_ICE_SPLASH		43
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;
@@ -731,6 +735,7 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 void fire_poison_arrow (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
 void fire_pusher (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect);
 void fire_fya_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
+void fire_ice_missile (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
 
 //
 // g_ptrail.c
@@ -1120,6 +1125,7 @@ struct edict_s
 	int			PoisonTime;
 	float		PoisonTotalTime;
 	int			PoisonDamage;
+	int			isPoisoned;
 
 	// Fire!!!!!!! IT BURNS!!!!
 	int			FyaDelay;
@@ -1128,10 +1134,16 @@ struct edict_s
 	int			FyaDamage;
 	int			isOnFya;
 
+	// Frozen...bbrrrrr
+	int			FrozenDelay;
+	int			FrozenTime;
+	int			FrozenTotalTime;
+	int			FrozenDamage;
+	int			isFrozen;
+
 	// BLOOD DRUNK!
 	float		DamageDelay;
 	float		DamageTime;
-	int			isPoisoned;
 	
 };
 

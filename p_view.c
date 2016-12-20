@@ -446,6 +446,10 @@ void SV_CalcBlend (edict_t *ent)
 	if (ent->isOnFya > 0)
 		SV_AddBlend(0.64, 0.09, 0.08, 0.2, ent->client->ps.blend);
 
+	// Add blue tinge for frozen
+	if (ent->isFrozen > 0)
+		SV_AddBlend(0.0, 0.1, 0.7, 0.2, ent->client->ps.blend);
+
 
 	// add for powerups
 	if (ent->client->quad_framenum > level.framenum)

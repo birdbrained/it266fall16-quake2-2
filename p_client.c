@@ -279,6 +279,9 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 			case MOD_FYA_BURN:
 				message = "burned from the FYA";
 				break;
+			case MOD_FREEZE:
+				message = "turned into a yummy popsicle";
+				break;
 			case MOD_SELFSWORD:
 				if (IsNeutral(self))
 					message = "went stabby-stabby to itself";
@@ -391,6 +394,13 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				break;
 			case MOD_FYA_RAIL:
 				message = "was FIYArailed by";
+				break;
+			case MOD_ICE_MISSILE:
+				message = "recieved the Spirit of Winter from";
+				break;
+			case MOD_ICE_SPLASH:
+				message = "felt";
+				message2 = "'s icy wind";
 				break;
 			default:
 				message = "somehow died by";
@@ -580,6 +590,13 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	self->FyaTotalTime = 540;
 	self->FyaDamage = 7;
 
+	//frozen delay
+	self->isFrozen = 0;
+	self->FrozenDelay = 30;
+	self->FrozenTime = 0;
+	self->FrozenTotalTime = 300;
+	self->FrozenDamage = 1;
+
 	if (self->health < -40)
 	{	// gib
 		gi.sound (self, CHAN_BODY, gi.soundindex ("misc/udeath.wav"), 1, ATTN_NORM, 0);
@@ -645,6 +662,9 @@ void InitClientPersistant (gclient_t *client)
 	gitem_t		*item;
 
 	memset (&client->pers, 0, sizeof(client->pers));
+
+	item = FindItem("Ice Missiles");
+	client->pers.inventory[ITEM_INDEX(item)] = 2;
 
 	item = FindItem("FIYA Railgun");
 	client->pers.inventory[ITEM_INDEX(item)] = 2;
@@ -1389,6 +1409,13 @@ void ClientBegin (edict_t *ent)
 	ent->FyaTotalTime = 540;
 	ent->FyaDamage = 7;
 
+	//frozen delay
+	ent->isFrozen = 0;
+	ent->FrozenDelay = 30;
+	ent->FrozenTime = 0;
+	ent->FrozenTotalTime = 300;
+	ent->FrozenDamage = 1;
+
 	if (deathmatch->value)
 	{
 		ClientBeginDeathmatch (ent);
@@ -1922,7 +1949,6 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	//FYA!!!!!
 	if (ent->isOnFya == 1)
 	{
-		//gi.dprintf("Poisoned!");
 		ent->FyaTime++;
 
 		// Set the spew vector based on the client's (the player's) view angle
@@ -1953,6 +1979,49 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			{
 				ent->isOnFya = 0;
 				ent->FyaTime = 0;
+			}
+		}
+		
+	}
+
+	//Frozen
+	if (ent->isFrozen == 1)
+	{
+		ent->FrozenTime++;
+		ent->speed = 0;
+		ent->velocity[0] = 0;
+		ent->velocity[1] = 0;
+		ent->velocity[2] = 0;
+
+		// Set the spew vector based on the client's (the player's) view angle
+		AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+		// Make the spew start from the mouth
+		VectorScale(forward, 24, mouth_pos);
+		VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
+
+		// Make the spew come forward from the mouth
+		VectorScale(forward, 24, spew_vector);
+
+		// Make the particle effect
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_SHIELD_SPARKS); //TE_SPARKS
+		gi.WritePosition(mouth_pos);
+		gi.WriteDir(spew_vector);
+		gi.multicast(mouth_pos, MULTICAST_PVS);
+
+		if (ent->FrozenTime % ent->FrozenDelay == 0 || ent->FrozenTime == 1)
+		{
+			if (ent->FrozenTime <= ent->FrozenTotalTime)
+			{
+				tr = gi.trace (ent->s.origin, NULL, NULL, ent->s.origin, ent, MASK_SHOT);
+				T_Damage(ent, ent, ent, forward, tr.endpos, tr.plane.normal, ent->FrozenDamage, 0, 0, MOD_FREEZE);
+			}
+			else
+			{
+				ent->isFrozen = 0;
+				ent->FrozenTime = 0;
+				ent->movetype = MOVETYPE_WALK;
 			}
 		}
 		

@@ -23,6 +23,7 @@ void Weapon_PoisonArrows (edict_t *ent);
 void Weapon_Pusher (edict_t *ent);
 void Weapon_SelfSword(edict_t *ent);
 void Weapon_Fya_Railgun (edict_t *ent);
+void Weapon_IceMissile (edict_t *ent);
 // Back to stuff
 
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
@@ -1642,13 +1643,34 @@ always owned, never in the world
 /* icon */		"w_railgun",
 /* pickup */	"FIYA Railgun",
 		0,
-		2,
+		5,
 		"Slugs",
 		IT_WEAPON|IT_STAY_COOP,
 		WEAP_FYA_RAILGUN,
 		NULL,
 		0,
 /* precache */ "weapons/rg_hum.wav"
+	},
+
+		{
+		"weapon_icemissile",
+		Pickup_Weapon,
+		Use_Weapon,
+		Drop_Weapon,
+		Weapon_IceMissile,
+		"misc/w_pkup.wav",
+		"models/weapons/g_rocket/tris.md2", EF_ROTATE,
+		"models/weapons/v_rocket/tris.md2", //"models/weapons/v_rocket/tris.md2"
+/* icon */		"w_rlauncher",
+/* pickup */	"Ice Missiles",
+		0,
+		5,
+		"Rockets",
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_ICE_MISSILE,
+		NULL,
+		0,
+/* precache */ "models/objects/rocket/tris.md2 weapons/rockfly.wav weapons/rocklf1a.wav weapons/rocklr1b.wav models/objects/debris2/tris.md2"
 	},
 
 	//
