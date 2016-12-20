@@ -1970,3 +1970,59 @@ void Weapon_IceMissile (edict_t *ent)
 	Weapon_Generic (ent, 4, 12, 50, 54, pause_frames, fire_frames, Weapon_IceMissile_Fire);
 }
 
+
+// BLACKOUT GUN
+void Blackout_Fire (edict_t *ent, vec3_t g_offset, int damage, int effect)
+{
+	// These are your vectors
+	vec3_t	forward, right;
+	vec3_t	start;
+	vec3_t	offset;
+
+	if (is_quad)
+		damage *= 4;
+	AngleVectors (ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 24, 8, ent->viewheight-8);	// This is a macro, where the spawn point of the bullets are in relation to the camera
+	VectorAdd (offset, g_offset, offset);
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start); //Takes foward and right vecors and figures out based on where im looking, where I should be firing 
+
+	VectorScale (forward, -2, ent->client->kick_origin); //Accounts for pushback
+	ent->client->kick_angles[0] = -1;
+	
+	/* Normal Shot */
+	
+	fire_blackout (ent, start, forward, damage, 400, effect);
+	
+
+
+	// send muzzle flash
+	gi.WriteByte (svc_muzzleflash);
+	gi.WriteShort (ent-g_edicts);
+	gi.WriteByte (MZ_BLASTER | is_silenced);
+	gi.multicast (ent->s.origin, MULTICAST_PVS);
+
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+
+void Weapon_Blackout_Fire (edict_t *ent)
+{
+	int		damage;
+
+	if (deathmatch->value)
+		damage = 25;
+	else
+		damage = 35;
+	Blackout_Fire (ent, vec3_origin, damage, EF_BLASTER);
+	ent->client->ps.gunframe++;
+	ent->client->pers.inventory[ent->client->ammo_index] -= ent->client->pers.weapon->quantity;
+}
+
+void Weapon_Blackout (edict_t *ent)
+{
+	static int	pause_frames[]	= {19, 32, 0};
+	static int	fire_frames[]	= {5, 0};
+	
+	Weapon_Generic (ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_Blackout_Fire);
+}
+

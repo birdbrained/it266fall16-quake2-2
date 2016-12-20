@@ -24,6 +24,7 @@ void Weapon_Pusher (edict_t *ent);
 void Weapon_SelfSword(edict_t *ent);
 void Weapon_Fya_Railgun (edict_t *ent);
 void Weapon_IceMissile (edict_t *ent);
+void Weapon_Blackout (edict_t *ent);
 // Back to stuff
 
 gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
@@ -1631,7 +1632,7 @@ always owned, never in the world
 		 "weapons/hgrenlb1b.wav misc/fhit3.wav"
 	},
 
-		{
+	{
 		"weapon_fya_railgun", 
 		Pickup_Weapon,
 		Use_Weapon,
@@ -1652,7 +1653,7 @@ always owned, never in the world
 /* precache */ "weapons/rg_hum.wav"
 	},
 
-		{
+	{
 		"weapon_icemissile",
 		Pickup_Weapon,
 		Use_Weapon,
@@ -1671,6 +1672,27 @@ always owned, never in the world
 		NULL,
 		0,
 /* precache */ "models/objects/rocket/tris.md2 weapons/rockfly.wav weapons/rocklf1a.wav weapons/rocklr1b.wav models/objects/debris2/tris.md2"
+	},
+
+	{
+		"weapon_blackout",
+		Pickup_Weapon,
+		Use_Weapon,
+		Drop_Weapon,
+		Weapon_Blackout,
+		"misc/w_pkup.wav",
+		"models/weapons/g_launch/tris.md2", EF_ROTATE,
+		"models/weapons/v_launch/tris.md2",
+/* icon */		"w_glauncher",
+/* pickup */	"\"Lights' Out\"",
+		0,
+		10,
+		"Bullets",
+		IT_WEAPON|IT_STAY_COOP,
+		WEAP_BLACKOUT_GUN,
+		NULL,
+		0,
+/* precache */ "models/items/keys/data_cd/tris.md2 weapons/grenlf1a.wav weapons/grenlr1b.wav weapons/grenlb1b.wav misc/windfly.wav"
 	},
 
 	//

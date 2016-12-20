@@ -406,6 +406,9 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "was pierced by";
 				message2 = "'s poison arrow";
 				break;
+			case MOD_BLACKOUT_GUN:
+				message = "'s lights are out, thanks to";
+				break;
 			default:
 				message = "somehow died by";
 				break;
@@ -601,6 +604,12 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	self->FrozenTotalTime = 150;
 	self->FrozenDamage = 1;
 
+	//blackout delay
+	self->isBlackout = 0;
+	self->BlackoutDelay = 30;
+	self->BlackoutTime = 0;
+	self->BlackoutTotalTime = 300;
+
 	if (self->health < -40)
 	{	// gib
 		gi.sound (self, CHAN_BODY, gi.soundindex ("misc/udeath.wav"), 1, ATTN_NORM, 0);
@@ -666,6 +675,9 @@ void InitClientPersistant (gclient_t *client)
 	gitem_t		*item;
 
 	memset (&client->pers, 0, sizeof(client->pers));
+	
+	item = FindItem("\"Lights' Out\"");
+	client->pers.inventory[ITEM_INDEX(item)] = 2;
 
 	item = FindItem("Ice Missiles");
 	client->pers.inventory[ITEM_INDEX(item)] = 2;
@@ -1420,6 +1432,12 @@ void ClientBegin (edict_t *ent)
 	ent->FrozenTotalTime = 150;
 	ent->FrozenDamage = 1;
 
+	//blackout delay
+	ent->isBlackout = 0;
+	ent->BlackoutDelay = 30;
+	ent->BlackoutTime = 0;
+	ent->BlackoutTotalTime = 300;
+
 	if (deathmatch->value)
 	{
 		ClientBeginDeathmatch (ent);
@@ -2029,6 +2047,44 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				ent->isFrozen = 0;
 				ent->FrozenTime = 0;
 				ent->movetype = MOVETYPE_WALK;
+			}
+		}
+		
+	}
+
+	// BLACKOUT
+	if (ent->isBlackout == 1)
+	{
+		ent->BlackoutTime++;
+
+		// Set the spew vector based on the client's (the player's) view angle
+		AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+		// Make the spew start from the mouth
+		VectorScale(forward, -3, mouth_pos);
+		VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
+
+		// Make the spew come forward from the mouth
+		VectorScale(forward, -3, spew_vector);
+
+		// Make the particle effect
+		gi.WriteByte(svc_temp_entity);
+		gi.WriteByte(TE_GUNSHOT); //TE_SPARKS
+		gi.WritePosition(mouth_pos);
+		gi.WriteDir(spew_vector);
+		gi.multicast(mouth_pos, MULTICAST_PVS);
+
+		if (ent->BlackoutTime % ent->BlackoutDelay == 0 || ent->BlackoutTime == 1)
+		{
+			if (ent->BlackoutTime <= ent->BlackoutTotalTime)
+			{
+				tr = gi.trace (ent->s.origin, NULL, NULL, ent->s.origin, ent, MASK_SHOT);
+				//T_Damage(ent, ent, ent, forward, tr.endpos, tr.plane.normal, ent->FrozenDamage, 0, 0, MOD_FREEZE);
+			}
+			else
+			{
+				ent->isBlackout = 0;
+				ent->BlackoutTime = 0;
 			}
 		}
 		

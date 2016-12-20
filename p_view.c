@@ -450,6 +450,10 @@ void SV_CalcBlend (edict_t *ent)
 	if (ent->isFrozen > 0)
 		SV_AddBlend(0.0, 0.1, 0.7, 0.2, ent->client->ps.blend);
 
+	// Add black tinge for blackout
+	if (ent->isBlackout > 0)
+		SV_AddBlend(0.0, 0.0, 0.0, 0.8, ent->client->ps.blend);
+
 
 	// add for powerups
 	if (ent->client->quad_framenum > level.framenum)

@@ -217,6 +217,7 @@ typedef struct
 #define WEAP_SELFSWORD			15
 #define WEAP_FYA_RAILGUN		16
 #define WEAP_ICE_MISSILE		17
+#define WEAP_BLACKOUT_GUN		18
 
 typedef struct gitem_s
 {
@@ -496,6 +497,7 @@ extern	int	body_armor_index;
 #define MOD_FREEZE			42
 #define MOD_ICE_SPLASH		43
 #define MOD_POISON_ARROW	44
+#define MOD_BLACKOUT_GUN	45
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;
@@ -737,6 +739,7 @@ void fire_poison_arrow (edict_t *self, vec3_t start, vec3_t dir, int damage, int
 void fire_pusher (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect);
 void fire_fya_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
 void fire_ice_missile (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
+void fire_blackout (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect);
 
 //
 // g_ptrail.c
@@ -1141,6 +1144,12 @@ struct edict_s
 	int			FrozenTotalTime;
 	int			FrozenDamage;
 	int			isFrozen;
+
+	// Blackout
+	int			BlackoutDelay;
+	int			BlackoutTime;
+	int			BlackoutTotalTime;
+	int			isBlackout;
 
 	// BLOOD DRUNK!
 	float		DamageDelay;

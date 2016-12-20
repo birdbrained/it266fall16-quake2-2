@@ -1008,6 +1008,8 @@ void ClientCommand (edict_t *ent)
 		ent->isOnFya = 1;
 	else if (Q_stricmp(cmd, "frozen") == 0 || Q_stricmp(cmd, "freeze") == 0)
 		ent->isFrozen = 1;
+	else if (Q_stricmp(cmd, "blackout") == 0)
+		ent->isBlackout = 1;
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }
