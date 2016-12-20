@@ -598,7 +598,7 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	self->isFrozen = 0;
 	self->FrozenDelay = 30;
 	self->FrozenTime = 0;
-	self->FrozenTotalTime = 300;
+	self->FrozenTotalTime = 150;
 	self->FrozenDamage = 1;
 
 	if (self->health < -40)
@@ -1417,7 +1417,7 @@ void ClientBegin (edict_t *ent)
 	ent->isFrozen = 0;
 	ent->FrozenDelay = 30;
 	ent->FrozenTime = 0;
-	ent->FrozenTotalTime = 300;
+	ent->FrozenTotalTime = 150;
 	ent->FrozenDamage = 1;
 
 	if (deathmatch->value)
@@ -1733,7 +1733,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			client->ps.pmove.pm_type = PM_SPECTATOR;
 		else if (ent->s.modelindex != 255)
 			client->ps.pmove.pm_type = PM_GIB;
-		else if (ent->deadflag)
+		else if (ent->deadflag || ent->isFrozen > 0)
 			client->ps.pmove.pm_type = PM_DEAD;
 		else
 			client->ps.pmove.pm_type = PM_NORMAL;
@@ -2004,11 +2004,11 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		AngleVectors(ent->client->v_angle, forward, right, NULL);
 
 		// Make the spew start from the mouth
-		VectorScale(forward, 24, mouth_pos);
+		VectorScale(forward, -3, mouth_pos);
 		VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
 
 		// Make the spew come forward from the mouth
-		VectorScale(forward, 24, spew_vector);
+		VectorScale(forward, -3, spew_vector);
 
 		// Make the particle effect
 		gi.WriteByte(svc_temp_entity);
