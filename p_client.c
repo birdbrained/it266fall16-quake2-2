@@ -557,6 +557,12 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	//health delay
 	self->DamageDelay = 30;
 
+	//poison delay
+	self->isPoisoned = false;
+	self->PoisonDelay = 60;
+	self->PoisonDamage = 5;
+	self->PoisonTotalTime = 540;
+
 	if (self->health < -40)
 	{	// gib
 		gi.sound (self, CHAN_BODY, gi.soundindex ("misc/udeath.wav"), 1, ATTN_NORM, 0);
@@ -1346,6 +1352,10 @@ void ClientBegin (edict_t *ent)
 	ent->bloodloss = 0;
 	ent->bloodmultiplier = 1;
 	ent->DamageDelay = 30;
+	ent->isPoisoned = false;
+	ent->PoisonDelay = 60;
+	ent->PoisonDamage = 5;
+	ent->PoisonTotalTime = 540;
 
 	if (deathmatch->value)
 	{
@@ -1798,6 +1808,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			UpdateChaseCam(other);
 	}
 
+	// Take damage if you are at max bloodmultiplier
 	if (ent->bloodmultiplier == 4)
 	{
 		ent->DamageTime++;
@@ -1834,6 +1845,46 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 				player_die(ent, ent, ent, 1, ent->s.origin);
 			}
 		}
+	}
+
+	// Damage if you are poisoned
+	if (ent->isPoisoned)
+	{
+		ent->PoisonTime++;
+		if (ent->PoisonTime % ent->PoisonDelay == 0)
+		{
+			if (ent->PoisonTime <= ent->PoisonTotalTime)
+			{
+				tr = gi.trace (ent->s.origin, NULL, NULL, ent->s.origin, ent, MASK_SHOT);
+				//T_Damage(self, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_SELFSWORD);
+
+
+				// Set the spew vector based on the client's (the player's) view angle
+				AngleVectors(ent->client->v_angle, forward, right, NULL);
+
+				// Make the spew start from the mouth
+				VectorScale(forward, 24, mouth_pos);
+				VectorAdd(mouth_pos, ent->s.origin, mouth_pos);
+				mouth_pos[2] += ent->viewheight;
+
+				// Make the spew come forward from the mouth
+				VectorScale(forward, 24, spew_vector);
+
+				// Make the BLOOD particle effect
+				gi.WriteByte(svc_temp_entity);
+				gi.WriteByte(TE_GREENBLOOD);
+				gi.WritePosition(mouth_pos);
+				gi.WriteDir(spew_vector);
+				gi.multicast(mouth_pos, MULTICAST_PVS);
+			
+				T_Damage(ent, ent, ent, forward, tr.endpos, tr.plane.normal, 2, 0, 0, MOD_WF_POISON);
+			}
+			else
+			{
+				ent->isPoisoned = false;
+			}
+		}
+		
 	}
 }
 

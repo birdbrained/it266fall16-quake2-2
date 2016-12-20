@@ -1704,8 +1704,8 @@ void Weapon_SelfSword(edict_t *ent)
 
 
 // POISON ARROWS
-void weapon_poison_arrow_fire (edict_t *ent)
-{
+//void weapon_poison_arrow_fire (edict_t *ent)
+/*{
 	vec3_t offset, start, forward, right;
 	int damage = 5 * ent->bloodmultiplier;
 	float damage_radius = 1000;
@@ -1736,13 +1736,14 @@ void weapon_poison_arrow_fire (edict_t *ent)
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 	ent->client->pers.inventory[ent->client->ammo_index] -= ent->client->pers.weapon->quantity;
 }
+*/
 
-void Weapon_PoisonArrows(edict_t *ent)
-{
+//void Weapon_PoisonArrows(edict_t *ent)
+/*{
 	static int pause_frames[] = {39, 45, 50, 55, 0};
 	static int fire_frames[] = {9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 0};
 	Weapon_Generic (ent, 8, 32, 55, 58, pause_frames, fire_frames, weapon_poison_arrow_fire);
-}
+}*/
 
 // PUSHER
 void Pusher_Fire (edict_t *ent, vec3_t g_offset, int damage, int effect)
@@ -1797,5 +1798,61 @@ void Weapon_Pusher (edict_t *ent)
 	static int	fire_frames[]	= {5, 0};
 	
 	Weapon_Generic (ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_Pusher_Fire);
+}
+
+
+
+// POISON ARROWS, take 2
+void Poison_Arrow_Fire (edict_t *ent, vec3_t g_offset, int damage, int effect)
+{
+	// These are your vectors
+	vec3_t	forward, right;
+	vec3_t	start;
+	vec3_t	offset;
+
+	if (is_quad)
+		damage *= 4;
+	AngleVectors (ent->client->v_angle, forward, right, NULL);
+	VectorSet(offset, 24, 8, ent->viewheight-8);	// This is a macro, where the spawn point of the bullets are in relation to the camera
+	VectorAdd (offset, g_offset, offset);
+	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start); //Takes foward and right vecors and figures out based on where im looking, where I should be firing 
+
+	VectorScale (forward, -2, ent->client->kick_origin); //Accounts for pushback
+	ent->client->kick_angles[0] = -1;
+	
+	/* Normal Shot */
+	
+	fire_poison_arrow (ent, start, forward, damage, 1000, effect);
+	
+
+
+	// send muzzle flash
+	gi.WriteByte (svc_muzzleflash);
+	gi.WriteShort (ent-g_edicts);
+	gi.WriteByte (MZ_BLASTER | is_silenced);
+	gi.multicast (ent->s.origin, MULTICAST_PVS);
+
+	PlayerNoise(ent, start, PNOISE_WEAPON);
+}
+
+void Weapon_Poison_Arrow_Fire (edict_t *ent)
+{
+	int		damage;
+
+	if (deathmatch->value)
+		damage = 5;
+	else
+		damage = 5;
+	Poison_Arrow_Fire (ent, vec3_origin, damage, EF_BLASTER);
+	ent->client->ps.gunframe++;
+	ent->client->pers.inventory[ent->client->ammo_index] -= ent->client->pers.weapon->quantity;
+}
+
+void Weapon_PoisonArrows(edict_t *ent)
+{
+	static int	pause_frames[]	= {19, 32, 0};
+	static int	fire_frames[]	= {5, 0};
+	
+	Weapon_Generic (ent, 4, 8, 52, 55, pause_frames, fire_frames, Weapon_Poison_Arrow_Fire);
 }
 

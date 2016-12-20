@@ -1060,8 +1060,9 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 Poison Arrows
 ========================
 */
-void Poison_Think(edict_t *self)
-{
+
+//void Poison_Think(edict_t *self)
+/*{
 	vec3_t dir, v;
 	int damage;
 	float points;
@@ -1098,10 +1099,11 @@ void Poison_Think(edict_t *self)
 	}
 	VectorCopy(self->owner->s.origin, self->s.origin);
 	self->nextthink = level.time + 0.2;
-}
+}*/
 
-void poison_person(edict_t *target, edict_t *owner, int damage)
-{
+
+//void poison_person(edict_t *target, edict_t *owner, int damage)
+/*{
 	edict_t *poi;
 	int i;
 
@@ -1109,7 +1111,7 @@ void poison_person(edict_t *target, edict_t *owner, int damage)
 		return;
 	target->Poison++;
 
-	/*poi = G_Spawn();
+	/////poi = G_Spawn();
 	//if (!poi)
 	//	return;
 	poi->movetype = MOVETYPE_NOCLIP;
@@ -1135,10 +1137,10 @@ void poison_person(edict_t *target, edict_t *owner, int damage)
 	gi.linkentity(poi);
 
 	VectorCopy(target->s.origin, poi->s.origin);*/
-}
+//}
 
-void poison_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
-{
+//void poison_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+/*{
 	if (other == self->owner)
 		return;
 
@@ -1156,10 +1158,10 @@ void poison_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
 		poison_person(other, self->owner, self->PoisonDamage);
 
 	G_FreeEdict(self);
-}
+}*/
 
-void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
-{
+//void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius)
+/*{
 	edict_t *poi;
 	trace_t tr;
 
@@ -1225,6 +1227,7 @@ void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int 
 	bolt->classname = "bolt";
 	gi.linkentity (bolt);	//gi is the class of function that commincates to the game engine
 	*/
+	/*
 	gi.linkentity(poi);
 	if (self->client)
 		check_dodge(self, poi->s.origin, dir, speed);
@@ -1236,7 +1239,7 @@ void fire_poison_arrow(edict_t *self, vec3_t start, vec3_t dir, int damage, int 
 		poi->touch (poi, tr.ent, NULL, NULL); //prevents shooting through walls, players, etc.
 	}
 	
-}
+}*/
 
 //
 /*
@@ -1357,6 +1360,101 @@ void fire_pusher (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
 	bolt->owner = self;	//who shot the gun
 	bolt->touch = pusher_touch;
+	//gi.dprintf("Crosstime after function is: %f\n", crosstime);
+	//gi.dprintf("level.time(%f) + crosstime(%f): %f\n", level.time, crosstime, level.time + crosstime);
+	//gi.dprintf
+	bolt->nextthink = level.time + crosstime + 0.70;
+	bolt->think = G_FreeEdict;	// frees up an entity that has previously been used, so the memory location can be used again
+								// G_FreeEdict
+	bolt->dmg = damage;
+	bolt->classname = "bolt";
+	gi.linkentity (bolt);	//gi is the class of function that commincates to the game engine
+	
+	if (self->client)
+		check_dodge (self, bolt->s.origin, dir, speed);
+
+	tr = gi.trace (self->s.origin, NULL, NULL, bolt->s.origin, bolt, MASK_SHOT); //from player origin to the center of where the bolt will be created
+	if (tr.fraction < 1.0) //did you hit anything? < 1 means you did.
+	{
+		VectorMA (bolt->s.origin, -10, dir, bolt->s.origin);
+		bolt->touch (bolt, tr.ent, NULL, NULL); //prevents shooting through walls, players, etc.
+	}
+}	//now do with this memory as you will
+
+
+
+// POISON ARROWS, take 2
+void poison_arrow_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	int		mod;
+	vec3_t aimdir;
+
+
+	if (other == self->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict (self);
+		return;
+	}
+
+	if (self->owner->client)
+		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage)
+	{
+		mod = MOD_PUSH;
+		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 5, DAMAGE_ENERGY, mod);
+		other->isPoisoned = true;
+	}
+	else
+	{
+		gi.WriteByte (svc_temp_entity);
+		gi.WriteByte (TE_BLASTER);
+		gi.WritePosition (self->s.origin);
+		if (!plane)
+			gi.WriteDir (vec3_origin);
+		else
+			gi.WriteDir (plane->normal);
+		gi.multicast (self->s.origin, MULTICAST_PVS);
+	}
+
+	G_FreeEdict (self);
+}
+
+void fire_poison_arrow (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect)
+{
+	edict_t	*bolt;	//New pointer to an entity, points to where ever in memory the pointer is defined
+	trace_t	tr;		//used by scanhit weapons
+
+	// scale damage by the multipler that you have
+	damage *= self->bloodmultiplier;
+	gi.dprintf("(P.Arrow) Current damage: (%d)\n", damage);
+
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();	//looks through the god array and looks for 1 instance in the array that is not in use, and returns that spot
+	bolt->svflags = SVF_DEADMONSTER;
+	// yes, I know it looks weird that projectiles are deadmonsters
+	// what this means is that when prediction is used against the object
+	// (blaster/hyperblaster shots), the player won't be solid clipped against
+	// the object.  Right now trying to run into a firing hyperblaster
+	// is very jerky since you are predicted 'against' the shots.
+	VectorCopy (start, bolt->s.origin);
+	VectorCopy (start, bolt->s.old_origin);
+	vectoangles (dir, bolt->s.angles);
+	VectorScale (dir, speed, bolt->velocity);
+	bolt->movetype = MOVETYPE_FLYMISSILE;
+	bolt->clipmask = MASK_SHOT;
+	bolt->solid = SOLID_BBOX;
+	bolt->s.effects |= effect;
+	VectorClear (bolt->mins);
+	VectorClear (bolt->maxs);
+	bolt->s.modelindex = gi.modelindex ("models/objects/barrels/tris.md2");
+	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
+	bolt->owner = self;	//who shot the gun
+	bolt->touch = poison_arrow_touch;
 	//gi.dprintf("Crosstime after function is: %f\n", crosstime);
 	//gi.dprintf("level.time(%f) + crosstime(%f): %f\n", level.time, crosstime, level.time + crosstime);
 	//gi.dprintf

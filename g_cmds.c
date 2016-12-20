@@ -1000,6 +1000,8 @@ void ClientCommand (edict_t *ent)
 		DrawBloodBars(ent);
 	else if (Q_stricmp(cmd, "666") == 0)
 		ent->bloodmultiplier = 4;
+	else if (Q_stricmp(cmd, "663") == 0)
+		ent->bloodmultiplier = 3;
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

@@ -1111,13 +1111,16 @@ struct edict_s
 	int			bloodmultiplier;
 
 	// Poison arrows
-	float		PoisonDelay;
-	int			Poison;
+	int			PoisonDelay;
+	float		Poison;
+	int			PoisonTime;
+	float		PoisonTotalTime;
 	int			PoisonDamage;
 
 	// BLOOD DRUNK!
 	float		DamageDelay;
 	float		DamageTime;
+	qboolean	isPoisoned;
 	
 };
 
