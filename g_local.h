@@ -495,6 +495,7 @@ extern	int	body_armor_index;
 #define MOD_ICE_MISSILE		41
 #define MOD_FREEZE			42
 #define MOD_ICE_SPLASH		43
+#define MOD_POISON_ARROW	44
 #define MOD_FRIENDLY_FIRE	0x8000000
 
 extern	int	meansOfDeath;

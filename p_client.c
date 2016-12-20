@@ -387,7 +387,7 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				break;
 			case MOD_VAMPIREKNIFE:
 				message = "was leeched by";
-				message2 = "'s Vampire Knife.";
+				message2 = "'s vampire knife.";
 				break;
 			case MOD_PUSH:
 				message = "was slightly nudged by";
@@ -396,11 +396,15 @@ void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 				message = "was FIYArailed by";
 				break;
 			case MOD_ICE_MISSILE:
-				message = "recieved the Spirit of Winter from";
+				message = "recieved the spirit of winter from";
 				break;
 			case MOD_ICE_SPLASH:
 				message = "felt";
 				message2 = "'s icy wind";
+				break;
+			case MOD_POISON_ARROW:
+				message = "was pierced by";
+				message2 = "'s poison arrow";
 				break;
 			default:
 				message = "somehow died by";

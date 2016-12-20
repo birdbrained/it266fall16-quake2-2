@@ -1419,9 +1419,8 @@ void poison_arrow_touch (edict_t *self, edict_t *other, cplane_t *plane, csurfac
 
 	if (other->takedamage)
 	{
-		mod = MOD_PUSH;
-		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 5, DAMAGE_ENERGY, mod);
 		other->isPoisoned = 1;
+		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 5, DAMAGE_ENERGY, MOD_POISON_ARROW);
 	}
 	else
 	{
@@ -1543,8 +1542,8 @@ void fire_fya_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 
 			if ((tr.ent != self) && (tr.ent->takedamage))
 			{
-				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_FYA_RAIL);
 				tr.ent->isOnFya = 1;
+				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, 0, MOD_FYA_RAIL);
 			}
 		}
 
@@ -1595,8 +1594,8 @@ void ice_missile_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_
 
 	if (other->takedamage)
 	{
-		T_Damage (other, ent, ent->owner, ent->velocity, ent->s.origin, plane->normal, ent->dmg, 0, 0, MOD_ICE_MISSILE);
 		other->isFrozen = 1;
+		T_Damage (other, ent, ent->owner, ent->velocity, ent->s.origin, plane->normal, ent->dmg, 0, 0, MOD_ICE_MISSILE);
 	}
 	else
 	{
